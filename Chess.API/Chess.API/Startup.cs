@@ -59,6 +59,7 @@ namespace Chess.API
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ValuesHub>("/Hubs/Values");
+                routes.MapHub<TableHub>("/Hubs/Tables");
             });
             app.UseMvc();
         }

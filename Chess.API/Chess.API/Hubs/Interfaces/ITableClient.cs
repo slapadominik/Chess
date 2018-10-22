@@ -1,12 +1,13 @@
-﻿using System.Threading.Tasks;
-using Chess.API.Hubs.Models;
+﻿using System;
+using System.Threading.Tasks;
 using Chess.Logic;
 
 namespace Chess.API.Hubs.Interfaces
 {
     public interface ITableClient
     {
-        Task ChooseSite(Color color);
-        Task UserJoin(UserJoined userJoined);
+        Task JoinGame(int tableNumber, Guid playerId, Color color);
+        Task JoinTable(int tableNumber);
+        Task NotifyUserJoined(string message);
     }
 }

@@ -1,7 +1,10 @@
-﻿namespace Chess.API.Services.Interfaces
+﻿using System;
+using Chess.Logic;
+
+namespace Chess.API.Services.Interfaces
 {
     public interface IGameService
     {
-        void JoinPlayer();
+
     }
 }
