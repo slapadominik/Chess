@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Chess.API.Entity;
 using Chess.API.Hubs;
-using Chess.API.Hubs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
