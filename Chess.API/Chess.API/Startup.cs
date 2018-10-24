@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Chess.API.Hubs;
+using Chess.API.Persistence.Implementation;
+using Chess.API.Persistence.Interfaces;
+using Chess.API.Services;
+using Chess.API.Services.Interfaces;
+using Chess.Logic;
+using Chess.Logic.Interfaces;
 using Elmah.Io.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -40,6 +46,11 @@ namespace Chess.API
             }));
             
             services.AddSignalR();
+            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddSingleton<IGameManager, GameManager>();
+            services.AddSingleton<ITableService, TableService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
