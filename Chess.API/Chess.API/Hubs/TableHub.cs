@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Chess.API.Entity.Interfaces;
-using Chess.API.Hubs.Interfaces;
 using Chess.API.Services.Interfaces;
 using Chess.Logic;
 using Microsoft.AspNetCore.SignalR;
@@ -24,8 +22,7 @@ namespace Chess.API.Hubs
             var user = _userService.GetUserById(playerId);
             var groupName = GetTableGroupName(tableNumber);
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            //await Clients.Groups(groupName).SendAsync("NotifyUserJoined", user.Username);
-            await Clients.All.SendAsync("NotifyUserJoined", user.Username);
+            await Clients.Groups(groupName).SendAsync("NotifyUserJoined", user.Username);
         }
 
         public async Task JoinGame(int tableNumber, Guid playerId, Color color)

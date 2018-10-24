@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using Chess.API.Entity;
-using Chess.API.Hubs;
+using Chess.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Chess.API.Controllers
 {
@@ -10,11 +9,29 @@ namespace Chess.API.Controllers
     [ApiController]
     public class UserController : Controller
     {
-        [HttpGet]
+        private readonly IUserService _userService;
+
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+        [HttpGet("create")]
         public IActionResult CreateUser()
         {
-            User user = new User();
-            return Ok(user.Id);
+            var id = _userService.CreateUser();
+            return Ok(id);
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetUserById(Guid id)
+        {
+            var user = _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound($"User with given id {id} doesn't exist");
+            }
+            return Ok(user);
+        } 
     }
 }

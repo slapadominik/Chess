@@ -45,11 +45,20 @@ namespace Chess.API.Tests.Hubs
             var groupName = "Table" + tableNumber;
             _userServiceMock.Setup(x => x.GetUserById(userId)).Returns(new User{Id = userId, Username = username});
             _groupManagerMock.Setup(x =>
-                x.AddToGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
+                    x.AddToGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
             _callerContextMock.Setup(x => x.ConnectionId).Returns("12357724");
+            _hubCallerClientsMock
+                .Setup(x => x.Groups(groupName))
+                .Returns(It.IsAny<IClientProxy>());
+            _hubCallerClientsMock
+                .Setup(x => x.Groups(It.IsAny<string>())
+                    .SendAsync(It.IsAny<string>(), username, It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
 
             //Act
             await _sut.JoinTable(10, userId);
+
             //Assert
             _hubCallerClientsMock.Verify(x => x.Groups(It.IsAny<string>()), Times.Exactly(2));
             

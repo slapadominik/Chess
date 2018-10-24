@@ -21,7 +21,12 @@ namespace Chess.API.Persistence.Implementation
 
         public UserDAO GetUserById(Guid id)
         {
-           return _users.Single(x => x.Id == id);
+           return _users.SingleOrDefault(x => x.Id == id);
+        }
+
+        public IEnumerable<UserDAO> GetUsers()
+        {
+            return _users;
         }
     }
 }
