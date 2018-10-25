@@ -11,6 +11,6 @@ namespace Chess.API.Services.Interfaces
         int AddTable();
         IEnumerable<ITable> GetTables();
         void JoinGame(int tableNumber, Guid playerId, Color color);
-        Guid CreateGame(int tableNumber);
+        Guid CreateGame(int tableNumber, Guid participantPlayer);
     }
 }

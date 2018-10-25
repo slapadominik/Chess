@@ -41,9 +41,13 @@ namespace Chess.API.Services.Interfaces
             table.JoinTable(playerId, color);
         }
 
-        public Guid CreateGame(int tableNumber)
+        public Guid CreateGame(int tableNumber, Guid participantPlayer)
         {
             var table = _tables.Single(x => x.Number == tableNumber);
+            if (table.PlayerBlackId != participantPlayer && table.PlayerWhiteId != participantPlayer)
+            {
+                throw new InvalidOperationException($"User {participantPlayer} is not a Player on Table {tableNumber}");
+            }
             if (!table.IsFull())
             {
                 throw new InvalidOperationException($"Table {table.Number} is not full! You cannot create game.");

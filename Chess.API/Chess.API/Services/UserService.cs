@@ -24,7 +24,8 @@ namespace Chess.API.Services
             {
                 return null;
             }
-            return new User {Id = userDAO.Id, Username = userDAO.Username};
+
+            return new User(userDAO.Id, userDAO.Username);
         }
 
         public IEnumerable<User> GetUsers()

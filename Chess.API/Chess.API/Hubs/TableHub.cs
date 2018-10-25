@@ -17,18 +17,29 @@ namespace Chess.API.Hubs
             _userService = userService;
         }
 
-        public async Task JoinTable(int tableNumber, Guid playerId)
+        public override async Task OnConnectedAsync()
         {
-            var user = _userService.GetUserById(playerId);
-            var groupName = GetTableGroupName(tableNumber);
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Groups(groupName).SendAsync("NotifyUserJoined", user.Username);
+            var id = _userService.CreateUser();
+            var user = _userService.GetUserById(id);
+            await Clients.Caller.SendAsync("CreateUser_Caller", user.Id, user.Username);
+            await Clients.All.SendAsync("UserCreated_All", user.Id, user.Username);
+        }
+
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            return base.OnDisconnectedAsync(exception);
         }
 
         public async Task JoinGame(int tableNumber, Guid playerId, Color color)
         {
             _tableService.JoinGame(tableNumber, playerId, color);
              await Clients.All.SendAsync("JoinGame", tableNumber, playerId, color);
+        }
+
+        public async Task CreateGame(int tableNumber, Guid participantPlayer)
+        {
+            var gameId = _tableService.CreateGame(tableNumber, participantPlayer);
+            await Clients.All.SendAsync("GameStarted", gameId);
         }
 
         private string GetTableGroupName(int tableNumber)
