@@ -10,7 +10,6 @@ namespace Chess.API.Entity
         public int Number { get; }
         public Guid PlayerBlackId { get; private set; }
         public Guid PlayerWhiteId { get; private set; }
-        public IGame Game { get; set; }
 
         public Table(int number)
         {

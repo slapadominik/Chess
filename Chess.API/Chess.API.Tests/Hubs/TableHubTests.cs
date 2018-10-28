@@ -57,7 +57,7 @@ namespace Chess.API.Tests.Hubs
                 .Returns(Task.CompletedTask);
 
             //Act
-            await _sut.JoinTable(10, userId);
+            //await _sut.JoinTable(10, userId);
 
             //Assert
             _hubCallerClientsMock.Verify(x => x.Groups(It.IsAny<string>()), Times.Exactly(2));

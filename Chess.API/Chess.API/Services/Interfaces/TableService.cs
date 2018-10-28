@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Chess.API.Entity;
 using Chess.API.Entity.Interfaces;
+using Chess.API.Helpers;
 using Chess.Logic;
 using Chess.Logic.Interfaces;
 
@@ -10,18 +11,22 @@ namespace Chess.API.Services.Interfaces
 {
     public class TableService : ITableService
     {
-        private readonly List<ITable> _tables;
+        private static readonly List<ITable> _tables;
         private readonly IGameManager _gameManager;
+
+        static TableService()
+        {
+            _tables = new List<ITable>(){new Table(1)};
+        }
 
         public TableService(IGameManager gameManager)
         {
-            _tables = new List<ITable>();
             _gameManager = gameManager;
         }
 
         public int AddTable()
         {
-            var tableNumber = CalculateFreeTableNumber();
+            var tableNumber = TableNumberCalculator.CalculateFreeTableNumber(_tables);
             _tables.Add(new Table(tableNumber));
             return tableNumber;
         }
@@ -53,25 +58,6 @@ namespace Chess.API.Services.Interfaces
                 throw new InvalidOperationException($"Table {table.Number} is not full! You cannot create game.");
             }
             return _gameManager.CreateGame(table.PlayerWhiteId, table.PlayerBlackId);
-        }
-
-        private int CalculateFreeTableNumber()
-        {
-            var tableNumber = -1;
-            for (int i = 1; i < _tables.Count; i++)
-            {
-                if (_tables[i].Number != i)
-                {
-                    tableNumber = i;
-                }
-            }
-
-            if (tableNumber == -1)
-            {
-                tableNumber = _tables.Count + 1;
-            }
-
-            return tableNumber;
         }
     }
 }
