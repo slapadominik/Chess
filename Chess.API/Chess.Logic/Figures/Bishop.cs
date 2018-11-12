@@ -12,5 +12,20 @@ namespace Chess.Logic.Figures
         {
             throw new System.NotImplementedException();
         }
+
+        public override bool Equals(object obj)
+        {
+            if (Equals(obj))
+            {
+                return true;
+            }
+
+            if (obj is Bishop)
+            {
+                return GetColor() == (obj as Bishop).GetColor();
+            }
+
+            return false;
+        }
     }
 }

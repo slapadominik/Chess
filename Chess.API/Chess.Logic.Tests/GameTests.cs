@@ -31,7 +31,7 @@ namespace Chess.Logic.Tests
         public void MakeMove_WhenCurrentPlayerIsWhiteAndBlackPlayerMakeMove_ShouldThrowNotACurrentPlayerException()
         {          
             //Act, Assert
-            Assert.Throws<NotACurrentPlayerException>(() => _sut.MakeMove(_playerBlack.Id, "K", "b3", "b5"));
+            Assert.Throws<NotACurrentPlayerException>(() => _sut.MakeMove(_playerBlack.Id, "b3", "b5"));
             _boardMock.Verify(x => x.GetChessman(It.IsAny<string>()), Times.Never());
             _sut.MovesCount().Should().Be(0);
         }
@@ -44,7 +44,7 @@ namespace Chess.Logic.Tests
             _boardMock.Setup(x => x.GetChessman(locationFrom)).Returns((Chessman) null);
 
             //Act, Assert
-            Assert.Throws<EmptyLocationException>(() => _sut.MakeMove(_playerWhite.Id, "P", "b3", "b4"));
+            Assert.Throws<EmptyLocationException>(() => _sut.MakeMove(_playerWhite.Id, "b3", "b4"));
             _boardMock.Verify(x => x.GetChessman(locationFrom), Times.Once);
             _sut.MovesCount().Should().Be(0);
         }
@@ -57,7 +57,7 @@ namespace Chess.Logic.Tests
             _boardMock.Setup(x => x.GetChessman(locationFrom)).Returns(new Pawn(Color.Black));
 
             //Act, Assert
-            Assert.Throws<WrongPlayerChessmanException>(() => _sut.MakeMove(_playerWhite.Id, "P", "b3", "b4"));
+            Assert.Throws<WrongPlayerChessmanException>(() => _sut.MakeMove(_playerWhite.Id, "b3", "b4"));
             _boardMock.Verify(x => x.GetChessman(locationFrom), Times.Once);
             _sut.MovesCount().Should().Be(0);
         }
@@ -75,7 +75,7 @@ namespace Chess.Logic.Tests
                 .Returns(It.IsAny<IBoard>());
 
             //Act, Assert
-            _sut.MakeMove(_playerWhite.Id, "K", locationFrom, locationTo);
+            _sut.MakeMove(_playerWhite.Id, locationFrom, locationTo);
             _boardMock.Verify(x => x.GetChessman(locationFrom), Times.Once);
             _sut.MovesCount().Should().Be(1);
             _sut.CurrentPlayer.Id.Should().Be(_playerBlack.Id);

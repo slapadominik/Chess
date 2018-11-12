@@ -42,7 +42,7 @@ namespace Chess.Logic
             return _id;
         }
 
-        public void MakeMove(Guid playerId, string chessman, string @from, string to)
+        public void MakeMove(Guid playerId, string @from, string to)
         {
             if (!IsCurrentPlayer(playerId))
             {

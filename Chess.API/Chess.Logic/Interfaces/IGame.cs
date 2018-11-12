@@ -5,7 +5,7 @@ namespace Chess.Logic.Interfaces
     public interface IGame
     {
         Guid GetId();
-        void MakeMove(Guid id, string figure, string from, string to);
+        void MakeMove(Guid id, string from, string to);
         int MovesCount();
 
     }

@@ -12,8 +12,8 @@ namespace Chess.Logic
         {
             _board = new Dictionary<string, Chessman>
             {
-                {Locations.A8, new Rook(Color.Black)}, {Locations.B8, new Knight(Color.Black)}, {Locations.C8, new Bishop(Color.Black)}, {Locations.D8, new Queen(Color.Black)}, {Locations.E8, new King(Color.Black)}, {Locations.F8, new Bishop(Color.Black)}, {Locations.G8, new Knight(Color.Black)}, {Locations.G8, new Rook(Color.Black)},
-                {Locations.A7, new Pawn(Color.Black)}, {Locations.B7,  new Pawn(Color.Black)}, {Locations.C7,  new Pawn(Color.Black)}, {Locations.D7, new Pawn(Color.Black)}, {Locations.E7,  new Pawn(Color.Black)}, {Locations.F7, new Pawn(Color.Black)}, {Locations.G7, new Pawn(Color.Black)}, {Locations.G7,  new Pawn(Color.Black)},
+                {Locations.A8, new Rook(Color.Black)}, {Locations.B8, new Knight(Color.Black)}, {Locations.C8, new Bishop(Color.Black)}, {Locations.D8, new Queen(Color.Black)}, {Locations.E8, new King(Color.Black)}, {Locations.F8, new Bishop(Color.Black)}, {Locations.G8, new Knight(Color.Black)}, {Locations.H8, new Rook(Color.Black)},
+                {Locations.A7, new Pawn(Color.Black)}, {Locations.B7,  new Pawn(Color.Black)}, {Locations.C7,  new Pawn(Color.Black)}, {Locations.D7, new Pawn(Color.Black)}, {Locations.E7,  new Pawn(Color.Black)}, {Locations.F7, new Pawn(Color.Black)}, {Locations.G7, new Pawn(Color.Black)}, {Locations.H7,  new Pawn(Color.Black)},
                 {Locations.A6, null}, {Locations.B6, null}, {Locations.C6, null}, {Locations.D6, null}, {Locations.E6, null}, {Locations.F6, null}, {Locations.G6, null}, {Locations.H6, null},
                 {Locations.A5, null}, {Locations.B5, null}, {Locations.C5, null}, {Locations.D5, null}, {Locations.E5, null}, {Locations.F5, null}, {Locations.G5, null}, {Locations.H5, null},
                 {Locations.A4, null}, {Locations.B4, null}, {Locations.C4, null}, {Locations.D4, null}, {Locations.E4, null}, {Locations.F4, null}, {Locations.G4, null}, {Locations.H4, null},
@@ -26,7 +26,7 @@ namespace Chess.Logic
 
         public Chessman GetChessman(string location)
         {
-            return _board[location];
+            return _board.ContainsKey(location) ? _board[location] : null;
         }
     }
 }
