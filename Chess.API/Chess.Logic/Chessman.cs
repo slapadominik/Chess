@@ -7,10 +7,12 @@ namespace Chess.Logic
     public abstract class Chessman
     {
         private readonly Color _color;
+        protected Dictionary<string, int> LocationMapper;
 
         public Chessman(Color color)
         {
             _color = color;
+            
         }
 
         public Color GetColor()
@@ -18,7 +20,7 @@ namespace Chess.Logic
             return _color;
         }
 
-        public abstract IBoard MakeMove(IBoard board, string @from, string @to);
+        public abstract MoveResult MakeMove(IBoard board, string @from, string @to);
 
     }
 }

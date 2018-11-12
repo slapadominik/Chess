@@ -42,7 +42,7 @@ namespace Chess.Logic
             return _id;
         }
 
-        public void MakeMove(Guid playerId, string @from, string to)
+        public MoveStatus MakeMove(Guid playerId, string @from, string to)
         {
             if (!IsCurrentPlayer(playerId))
             {
@@ -63,9 +63,10 @@ namespace Chess.Logic
 
             try
             {
-                _board = figure.MakeMove(_board, from, to);
+                var moveResult = figure.MakeMove(_board, from, to);
                 _moves++;
                 _currentPlayer = SetCurrentPlayer();
+                return moveResult.MoveStatus;
             }
             catch (Exception ex)
             {

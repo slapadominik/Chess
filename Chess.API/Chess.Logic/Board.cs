@@ -28,5 +28,10 @@ namespace Chess.Logic
         {
             return _board.ContainsKey(location) ? _board[location] : null;
         }
+
+        public void SetChessman(string location, Chessman chessman)
+        {
+            _board[location] = chessman;
+        }
     }
 }

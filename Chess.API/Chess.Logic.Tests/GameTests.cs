@@ -71,8 +71,8 @@ namespace Chess.Logic.Tests
             string locationTo = "b4";
             Mock<Chessman> chessmanMock = new Mock<Chessman>(MockBehavior.Loose, Color.White);
             _boardMock.Setup(x => x.GetChessman(locationFrom)).Returns(chessmanMock.Object);
-            chessmanMock.Setup(x => x.MakeMove(It.IsAny<IBoard>(), locationFrom, locationTo))
-                .Returns(It.IsAny<IBoard>());
+            chessmanMock.Setup(x => x.MakeMove(It.IsAny<Board>(), locationFrom, locationTo))
+                .Returns(It.IsAny<MoveResult>());
 
             //Act, Assert
             _sut.MakeMove(_playerWhite.Id, locationFrom, locationTo);
