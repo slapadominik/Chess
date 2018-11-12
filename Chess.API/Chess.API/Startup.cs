@@ -2,10 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Chess.API.Hubs;
+using Chess.API.Persistence.Implementation;
+using Chess.API.Persistence.Interfaces;
+using Chess.API.Services;
+using Chess.API.Services.Interfaces;
+using Chess.Logic;
+using Chess.Logic.Interfaces;
+using Elmah.Io.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -25,7 +35,22 @@ namespace Chess.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc();
+            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            {
+                builder
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .WithOrigins("http://localhost:3000");
+            }));
+            
+            services.AddSignalR();
+            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddSingleton<IGameManager, GameManager>();
+            services.AddSingleton<ITableService, TableService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,7 +65,13 @@ namespace Chess.API
                 app.UseHsts();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseHttpsRedirection();
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<ValuesHub>("/Hubs/Values");
+                routes.MapHub<TableHub>("/Hubs/Tables");
+            });
             app.UseMvc();
         }
     }
