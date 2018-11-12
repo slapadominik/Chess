@@ -1,20 +1,13 @@
-# Ignore template from dotnet/core github
-
 *.swp
-*.*~
 project.lock.json
 .DS_Store
 *.pyc
 nupkg/
 
-# Visual Studio Code
-.vscode
-
 # User-specific files
 *.suo
 *.user
 *.userosscache
-*.sln.docstates
 
 # Build results
 [Dd]ebug/
@@ -48,12 +41,11 @@ flow-coverage/
 fixtures/dom/public/react-dom.js
 fixtures/dom/public/react.js
 test/the-files-to-test.generated.js
-*.log*
+
 chrome-user-data
 *.sublime-project
 *.sublime-workspace
 .idea
-*.iml
 *.swo
 
 *.sln
