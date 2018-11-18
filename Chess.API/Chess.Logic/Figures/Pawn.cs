@@ -10,14 +10,14 @@ namespace Chess.Logic.Figures
 {
     public class Pawn : Chessman
     {
-        private bool _firstMove;
+        public bool IsFirstMove { get; set; }
         private readonly int[] _validNormalMoves;
         private readonly int[] _validFirstMoves;
         private readonly int[] _validCaptureMoves;
 
         public Pawn(Color color) : base(color)
         {
-            _firstMove = true;
+            IsFirstMove = true;
             _validNormalMoves = new int[] {8, -8};
             _validFirstMoves = new int[]{16, -16};
             _validCaptureMoves = new int[] {9, -9, 7, -7};
@@ -27,10 +27,10 @@ namespace Chess.Logic.Figures
         {
             if (board.GetChessman(to) == null)
             {
-                if (_firstMove)
+                if (IsFirstMove)
                 {
                     ValidateMove(board, from, to, _validNormalMoves.Concat(_validFirstMoves));
-                    _firstMove = false;
+                    IsFirstMove = false;
                 }
                 else
                 {
