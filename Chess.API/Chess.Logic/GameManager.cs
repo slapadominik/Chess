@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chess.Logic.Helpers;
 using Chess.Logic.Interfaces;
 
 namespace Chess.Logic
@@ -16,7 +17,7 @@ namespace Chess.Logic
 
         public Guid CreateGame(Guid playerWhiteId, Guid playerBlackId)
         {
-            var game = new Game(playerWhiteId, playerBlackId, new Board());
+            var game = new Game(playerWhiteId, playerBlackId, new Board(new MoveValidator()));
             _games.Add(game);
             return game.GetId();
         }

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using Chess.Logic.Helpers.Interfaces;
 
 namespace Chess.Logic.Helpers
 {
-    public static class MoveValidator
+    public class MoveValidator : IMoveValidator
     {
         private static readonly Dictionary<string, int> LocationMapper = new Dictionary<string, int>
         {
@@ -16,7 +17,7 @@ namespace Chess.Logic.Helpers
             {Locations.A1, 57}, {Locations.B1, 58}, {Locations.C1, 59}, {Locations.D1, 60}, {Locations.E1, 61}, {Locations.F1, 62}, {Locations.G1, 63}, {Locations.H1, 64}
         };
 
-        public static bool IsMoveValid(int[] availableMoves, string @from, string to)
+        public bool IsMoveValid(IEnumerable<int> availableMoves, string @from, string to)
         {
             if (LocationMapper.ContainsKey(@from) && LocationMapper.ContainsKey(to))
             {

@@ -1,5 +1,7 @@
 ﻿using Chess.Logic.Figures;
+using Chess.Logic.Helpers.Interfaces;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 
 namespace Chess.Logic.Tests
@@ -8,11 +10,12 @@ namespace Chess.Logic.Tests
     public class BoardTests
     {
         private Board _sut;
+        private Mock<IMoveValidator> _moveValidatorMock;
 
         [SetUp]
         public void SetUp()
         {
-            _sut = new Board();
+            _sut = new Board(_moveValidatorMock.Object);
         }
 
         [Test]

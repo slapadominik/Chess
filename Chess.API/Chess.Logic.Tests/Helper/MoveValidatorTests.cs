@@ -7,13 +7,20 @@ namespace Chess.Logic.Tests.Helper
     [TestFixture]
     public class MoveValidatorTests
     {
+        private MoveValidator _sut;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _sut = new MoveValidator();
+        }
         [TestCase(new int[] { 8, -8 }, "d2", "d3")]
         [TestCase(new int[] { 5, 6, 10, 11, 15, 17 }, "g1", "f3")]
         public void IsMoveValid_WhenLocationFromAndLocationToIsValidAndMoveIsValid_ReturnsTrue(int[] availableMoves, string @from, string @to)
         {
 
             //Act
-            var result = MoveValidator.IsMoveValid(availableMoves, @from, @to);
+            var result = _sut.IsMoveValid(availableMoves, @from, @to);
 
             //Assert
             Assert.IsTrue(result);
@@ -25,7 +32,7 @@ namespace Chess.Logic.Tests.Helper
         {
 
             //Act
-            var result = MoveValidator.IsMoveValid(availableMoves, @from, @to);
+            var result = _sut.IsMoveValid(availableMoves, @from, @to);
 
             //Assert
             Assert.IsFalse(result);

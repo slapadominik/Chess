@@ -49,6 +49,8 @@ namespace Chess.Logic
                 throw new NotACurrentPlayerException($"Game {_id}: Player {playerId} is not a current player");
             }
 
+            CheckIfFieldsExist(from, to);
+
             var figure = _board.GetChessman(@from);
             if (figure == null)
             {
@@ -71,6 +73,14 @@ namespace Chess.Logic
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        private void CheckIfFieldsExist(string from, string to)
+        {
+            if (_board.FieldExists(from) && _board.FieldExists(to))
+            {
+                throw new InvalidFieldException();
             }
         }
 
