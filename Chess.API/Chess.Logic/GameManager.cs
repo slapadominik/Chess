@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Chess.Logic.Exceptions;
 using Chess.Logic.Helpers;
 using Chess.Logic.Interfaces;
 
@@ -24,7 +25,12 @@ namespace Chess.Logic
 
         public IGame GetGame(Guid gameId)
         {
-            return _games.SingleOrDefault(x => x.GetId()==gameId);
+            var game = _games.SingleOrDefault(x => x.GetId()==gameId);
+            if (game == null)
+            {
+                throw new GameNotExistException($"Game with Id: [{gameId}] does not exist!");
+            }
+            return game;
         }
     }
 }

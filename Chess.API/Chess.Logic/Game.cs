@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
 using Chess.Logic.Interfaces;
@@ -15,10 +16,11 @@ namespace Chess.Logic
         private Player _currentPlayer;
         private int _moves;
         private Guid _id;
+        private bool _gameStarted;
 
         public Game(Guid playerWhite, Guid playerBlack, IBoard board)
         {
-            _id = new Guid();
+            _id = Guid.NewGuid();
             _playerWhite = new Player(playerWhite, Color.White);
             _playerBlack = new Player(playerBlack, Color.Black);
             _moves = 0;
@@ -37,6 +39,11 @@ namespace Chess.Logic
             return _moves;
         }
 
+        public void StartGame()
+        {
+            _gameStarted = true;
+        }
+
         public Guid GetId()
         {
             return _id;
@@ -44,9 +51,14 @@ namespace Chess.Logic
 
         public MoveStatus MakeMove(Guid playerId, string @from, string to)
         {
+            if (!_gameStarted)
+            {
+                throw new GameNotStartedException($"Cannot make move in Game [{_id}] - game hasn't started yet.");
+            }
+
             if (!IsCurrentPlayer(playerId))
             {
-                throw new NotACurrentPlayerException($"Game {_id}: Player {playerId} is not a current player");
+                throw new NotACurrentPlayerException($"Game {_id}: Player {playerId} is not a current player.");
             }
 
             CheckIfFieldsExist(from, to);

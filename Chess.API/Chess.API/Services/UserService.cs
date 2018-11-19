@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Chess.API.Entity;
+using Chess.API.Exceptions;
 using Chess.API.Persistence.DAO;
 using Chess.API.Persistence.Interfaces;
 using Chess.API.Services.Interfaces;
@@ -22,7 +23,7 @@ namespace Chess.API.Services
             var userDAO = _userRepository.GetUserById(id);
             if (userDAO == null)
             {
-                return null;
+                throw new UserNotFoundException($"User with Id: [{id}] not found.");
             }
 
             return new User(userDAO.Id, userDAO.Username);

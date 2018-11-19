@@ -50,7 +50,7 @@ namespace Chess.API
             services.AddTransient<IUserService, UserService>();
             services.AddSingleton<IGameManager, GameManager>();
             services.AddSingleton<ITableService, TableService>();
-
+            services.AddTransient<IGameService, GameService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +71,7 @@ namespace Chess.API
             {
                 routes.MapHub<ValuesHub>("/Hubs/Values");
                 routes.MapHub<TableHub>("/Hubs/Tables");
+                routes.MapHub<GameHub>("/Hubs/Games");
             });
             app.UseMvc();
         }
