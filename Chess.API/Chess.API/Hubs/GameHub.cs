@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Chess.API.Exceptions;
 using Chess.API.Services.Interfaces;
 using Chess.Logic;
 using Chess.Logic.Exceptions;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace Chess.API.Hubs
 {
@@ -13,29 +15,38 @@ namespace Chess.API.Hubs
         private readonly ITableService _tableService;
         private readonly IUserService _userService;
         private readonly IGameService _gameService;
+        private readonly ILogger _logger;
 
-        public GameHub(ITableService tableService, IUserService userService, IGameService gameService)
+        public GameHub(ITableService tableService, IUserService userService, IGameService gameService, ILogger<GameHub> logger)
         {
             _tableService = tableService;
             _userService = userService;
             _gameService = gameService;
+            _logger = logger;
         }
 
         public override async Task OnConnectedAsync()
         {
             var id = _userService.CreateUser();
             var user = _userService.GetUserById(id);
-            await Clients.Caller.SendAsync("CreateUser_Caller", user.Id, user.Username);
-            await Clients.All.SendAsync("UserCreated_All", user.Id, user.Username);
+            await Clients.Caller.SendAsync("UserCreated_Caller", user.Id, user.Username);
+            await Clients.All.SendAsync("UserCreated_All", user.Username);
+            
         }
 
         public async Task JoinGame(int tableNumber, Guid playerId, Color color)
         {
             try
             {
-                _tableService.JoinGame(tableNumber, playerId, color);
                 var user = _userService.GetUserById(playerId);
-                await Clients.All.SendAsync("JoinGame", tableNumber, user.Username, color);
+                _tableService.JoinTable(tableNumber, playerId, color);
+
+                _logger.LogInformation($"User with id [{playerId}] successfully joined game on table [{tableNumber}] with color {color}");
+                await Clients.All.SendAsync("JoinGame_Result", tableNumber, user.Username, color);
+            }
+            catch (TableNotExistException ex)
+            {
+                await Clients.Caller.SendAsync("JoinGame_Error", ex.Message);
             }
             catch (InvalidOperationException ex)
             {
@@ -43,35 +54,55 @@ namespace Chess.API.Hubs
             }
             catch (UserNotFoundException ex)
             {
+                _logger.LogInformation($"User with id [{playerId}] doesn't exist!");
                 await Clients.Caller.SendAsync("JoinGame_Error", ex.Message);
             }
         }
 
-        public async Task CreateGame(int tableNumber, Guid participantPlayer)
+        public async Task ResetTable(int tableNumber)
+        {
+            var table = _tableService.Get(tableNumber);
+            if (table == null)
+            {
+                _logger.LogWarning($"{nameof(ResetTable)} - Table with number {tableNumber} doesn't exist.");
+                return;
+            }
+
+            table.DismissPlayers();
+            table.Game = null;
+            _logger.LogWarning($"Dismissed players on table {tableNumber}!");
+            _gameService.DeleteGames();
+            _logger.LogWarning($"Deleted all games!");
+
+            await Clients.All.SendAsync("ResetTable_result");
+        }
+
+        public async Task CreateGame(int tableNumber, Guid userId)
         {
             try
             {
-                var gameId = _tableService.CreateGame(tableNumber, participantPlayer);
-                await Clients.All.SendAsync("GameCreated", gameId);
+                var gameId = _gameService.CreateGame(tableNumber, userId);
+                _logger.LogInformation(
+                    $"Game for table [{tableNumber}] has been successfully created with id [{gameId}]");
+                await Clients.All.SendAsync($"CreateGame_Result", gameId);
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                await Clients.Caller.SendAsync("CreateGame_Error", ex.Message);
+                _logger.LogWarning(ex.Message);
             }
         }
 
-        public async Task StartGame(Guid gameId, Guid participantPlayer)
+        public async Task StartGame(Guid gameId, Guid userId)
         {
             try
             {
-                var game = _gameService.GetGame(gameId);
-                game.StartGame();
-                await Clients.All.SendAsync("StartGame_Result");
+                _gameService.StartGame(gameId, userId);
+                await Clients.All.SendAsync("StartGame_Result", gameId);
             }
-            catch (GameNotExistException ex)
+            catch (Exception ex)
             {
-                await Clients.Caller.SendAsync("GameStarted_Error", ex.Message);
-            }
+                _logger.LogWarning(ex.Message);
+            }    
         }
 
         public async Task MakeMove(Guid gameId, Guid playerId, string from, string to)
@@ -88,9 +119,14 @@ namespace Chess.API.Hubs
             }
         }
 
-        public async Task UserDisconnected(Guid userId)
+        public async Task WriteMessage(string msg, string username)
         {
-            await Clients.All.SendAsync("UserDisconnected", userId);
+            await Clients.All.SendAsync("WriteMesssage_Result", username, msg);
+        }
+
+        public async Task UserDisconnected(string msg)
+        {
+            await Clients.All.SendAsync("UserDisconnected", msg);
         }
 
         private string GetTableGroupName(int tableNumber)

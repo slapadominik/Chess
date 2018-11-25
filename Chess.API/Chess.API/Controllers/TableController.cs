@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Chess.API.DTO.Input;
 using Chess.API.Entity;
+using Chess.API.Exceptions;
 using Chess.API.Hubs;
+using Chess.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -13,27 +16,29 @@ namespace Chess.API.Controllers
     public class TableController : Controller
     {
         private readonly ILogger<TableController> _logger;
-        private readonly IHubContext<TableHub> _contextTableHub;
+        private readonly ITableService _tableService;
 
-        public TableController(ILogger<TableController> logger, IHubContext<TableHub> contextTableHub)
+        public TableController(ILogger<TableController> logger, ITableService tableService)
         {
             _logger = logger;
-            _contextTableHub = contextTableHub;
+            _tableService = tableService;
         }
 
-        [HttpPost("chooseSite")]
-        public async Task<IActionResult> ChooseSite([FromBody]DTO.Input.UserColor user)
+        [HttpPost("getTableInfo")]
+        public async Task<IActionResult> GetTableInfo([FromBody] TableInfoRequest tableInfoRequest)
         {
             try
             {
-                //_table.ChooseSite(userDomain, user.Color);
-                await _contextTableHub.Clients.All.SendAsync("ChooseSite", user.Color);
+                var tableState = _tableService.GetTableState(tableInfoRequest.TableNumber);
+                _logger.LogInformation($"Successfully retrieved table state for table [{tableInfoRequest.TableNumber}]");
+                return Ok(tableState);
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
+                _logger.LogWarning(ex.Message);
                 return BadRequest(ex.Message);
             }
-            return Ok();
         }
+
     }
 }

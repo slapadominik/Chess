@@ -39,9 +39,18 @@ namespace Chess.Logic
             return _moves;
         }
 
-        public void StartGame()
+        public void StartGame(Guid userId)
         {
+            if (_playerBlack.Id != userId && _playerWhite.Id != userId)
+            {
+                throw new InvalidOperationException($"User {userId} is not a player in game {_id} - he cannot start game.");
+            }
             _gameStarted = true;
+        }
+
+        public bool IsGameStarted()
+        {
+            return _gameStarted;
         }
 
         public Guid GetId()

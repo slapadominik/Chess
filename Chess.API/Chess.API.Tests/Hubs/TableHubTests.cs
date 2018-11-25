@@ -30,7 +30,7 @@ namespace Chess.API.Tests.Hubs
             _clientProxyMock = new Mock<IClientProxy>();
             _groupManagerMock = new Mock<IGroupManager>();
             _callerContextMock = new Mock<HubCallerContext>();
-            _sut = new TableHub(_tableServiceMock.Object, _userServiceMock.Object) { Clients = _hubCallerClientsMock.Object, Groups = _groupManagerMock.Object, Context = _callerContextMock.Object};
+            _sut = new TableHub(_tableServiceMock.Object) { Clients = _hubCallerClientsMock.Object, Groups = _groupManagerMock.Object, Context = _callerContextMock.Object};
 
 
         }

@@ -23,6 +23,11 @@ namespace Chess.Logic
             return game.GetId();
         }
 
+        public void DeleteGames()
+        {
+           _games.Clear();
+        }
+
         public IGame GetGame(Guid gameId)
         {
             var game = _games.SingleOrDefault(x => x.GetId()==gameId);
