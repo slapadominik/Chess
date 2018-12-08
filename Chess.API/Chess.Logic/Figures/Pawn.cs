@@ -37,12 +37,12 @@ namespace Chess.Logic.Figures
         {
             if (IsFirstMove)
             {
-                ValidateMove(board, from, to, _validNormalMoves.Concat(_validFirstMoves));
+                ValidateMove(board, from, to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor()));
                 IsFirstMove = false;
             }
             else
             {
-                ValidateMove(board, from, to, _validNormalMoves);
+                ValidateMove(board, from, to, FilterValidMoves(_validNormalMoves, GetColor()));
             }
             Move(board, from, to);
             return MoveStatus.Normal;
@@ -57,24 +57,16 @@ namespace Chess.Logic.Figures
             //TODO: implementacja przypadku promocji pionka
             if (IsFirstMove)
             {
-                ValidateMove(board, from, to, _validCaptureMoves);
+                ValidateMove(board, from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
                 IsFirstMove = false;
             }
             else
             {
-                ValidateMove(board, from, to, _validCaptureMoves);
+                ValidateMove(board, from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
             }
 
             Move(board, from, to);
             return MoveStatus.Capture;
-        }
-
-        private void ValidateMove(IBoard board, string from, string to, IEnumerable<int> validMoves)
-        {
-           if (!board.IsMoveValid(FilterValidMoves(validMoves, GetColor()), from, to))
-           {
-             throw new InvalidMoveException($"Pawn cannot make move [{from}:{to}]");
-           }
         }
 
         private IEnumerable<int> FilterValidMoves(IEnumerable<int> moves, Color color)
@@ -85,12 +77,6 @@ namespace Chess.Logic.Figures
             }
 
             return moves.Where(x => x < 0);
-        }
-
-        private void Move(IBoard board, string from, string to)
-        {
-            board.SetChessman(to, this);
-            board.SetChessman(from, null);
         }
 
         public override bool Equals(object obj)
