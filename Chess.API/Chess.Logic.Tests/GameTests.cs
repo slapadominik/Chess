@@ -72,7 +72,7 @@ namespace Chess.Logic.Tests
             Mock<Chessman> chessmanMock = new Mock<Chessman>(MockBehavior.Loose, Color.White);
             _boardMock.Setup(x => x.GetChessman(locationFrom)).Returns(chessmanMock.Object);
             chessmanMock.Setup(x => x.MakeMove(It.IsAny<Board>(), locationFrom, locationTo))
-                .Returns(It.IsAny<MoveResult>());
+                .Returns(It.IsAny<MoveStatus>());
 
             //Act, Assert
             _sut.MakeMove(_playerWhite.Id, locationFrom, locationTo);

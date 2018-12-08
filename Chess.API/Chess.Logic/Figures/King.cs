@@ -8,7 +8,7 @@ namespace Chess.Logic.Figures
         {
         }
 
-        public override MoveResult MakeMove(IBoard board, string @from, string to)
+        public override MoveStatus MakeMove(IBoard board, string @from, string to)
         {
             throw new System.NotImplementedException();
         }

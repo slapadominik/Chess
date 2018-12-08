@@ -6,6 +6,8 @@ namespace Chess.Logic
     {
         public Guid Id { get; }
         public Color Color { get; }
+        public string Name { get; set; }
+
         public Player(Guid id, Color color)
         {
             Id = id;

@@ -2,10 +2,10 @@
 {
     public enum MoveStatus
     {
-        Normal,
-        Capture,
-        PawnPromotion,
-        Check,
-        Checkmate
+        Normal = 1,
+        Capture = 2,
+        PawnPromotion = 3,
+        Check = 4,
+        Checkmate = 5
     }
 }

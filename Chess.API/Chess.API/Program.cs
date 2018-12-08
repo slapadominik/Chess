@@ -23,8 +23,8 @@ namespace Chess.API
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((hostingContext, config) => { config.AddJsonFile("appsettings.json", optional:true, reloadOnChange:true); })
                 .ConfigureLogging((ctx, logging) =>
-                    {
-                        logging.AddConfiguration(ctx.Configuration.GetSection("Logging"));
-                    });
+                {
+                    logging.AddConfiguration(ctx.Configuration.GetSection("Logging"));
+                 });
     }
 }

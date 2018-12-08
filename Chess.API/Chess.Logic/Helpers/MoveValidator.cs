@@ -25,7 +25,7 @@ namespace Chess.Logic.Helpers
                 var valueTo = LocationMapper[to];                
                 foreach (var availableDiff in availableMoves)
                 {
-                    if (valueFrom - valueTo == availableDiff)
+                    if (valueTo - valueFrom == availableDiff)
                     {
                         return true;
                     }

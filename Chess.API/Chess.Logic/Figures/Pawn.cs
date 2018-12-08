@@ -23,31 +23,50 @@ namespace Chess.Logic.Figures
             _validCaptureMoves = new int[] {9, -9, 7, -7};
         }
 
-        public override MoveResult MakeMove(IBoard board, string from, string to)
+        public override MoveStatus MakeMove(IBoard board, string from, string to)
         {
             if (board.GetChessman(to) == null)
             {
-                if (IsFirstMove)
-                {
-                    ValidateMove(board, from, to, _validNormalMoves.Concat(_validFirstMoves));
-                    IsFirstMove = false;
-                }
-                else
-                {
-                    ValidateMove(board, from, to, _validNormalMoves);
-                }
-                Move(board, from, to);
-                return new MoveResult(board, MoveStatus.Normal);
+                return MakeNonCaptureMove(board, from, to);
             }
 
+            return MakeCaptureMove(board, from, to);
+        }
+
+        private MoveStatus MakeNonCaptureMove(IBoard board, string from, string to)
+        {
+            if (IsFirstMove)
+            {
+                ValidateMove(board, from, to, _validNormalMoves.Concat(_validFirstMoves));
+                IsFirstMove = false;
+            }
+            else
+            {
+                ValidateMove(board, from, to, _validNormalMoves);
+            }
+            Move(board, from, to);
+            return MoveStatus.Normal;
+        }
+
+        private MoveStatus MakeCaptureMove(IBoard board, string from, string to)
+        {
             if (board.GetChessman(to).GetColor() == GetColor())
             {
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
             //TODO: implementacja przypadku promocji pionka
-            ValidateMove(board, from, to, _validCaptureMoves);
+            if (IsFirstMove)
+            {
+                ValidateMove(board, from, to, _validCaptureMoves);
+                IsFirstMove = false;
+            }
+            else
+            {
+                ValidateMove(board, from, to, _validCaptureMoves);
+            }
+
             Move(board, from, to);
-            return new MoveResult(board, MoveStatus.Capture);
+            return MoveStatus.Capture;
         }
 
         private void ValidateMove(IBoard board, string from, string to, IEnumerable<int> validMoves)

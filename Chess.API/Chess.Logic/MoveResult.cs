@@ -1,16 +1,21 @@
-﻿using Chess.Logic.Interfaces;
+﻿using System;
+using Chess.Logic.Interfaces;
 
 namespace Chess.Logic
 {
-    public struct MoveResult
+    public class MoveResult
     {
-        public MoveResult(IBoard board, MoveStatus moveStatus)
-        {
-            MoveStatus = moveStatus;
-            Board = board;
-        }
+        public string From { get; }
+        public string To { get; }
+        public MoveStatus MoveStatus { get; }
+        public Guid CurrentPlayer { get; }
 
-        public MoveStatus MoveStatus { get; set; }
-        public IBoard Board { get; set; }
+        public MoveResult(string from, string to, MoveStatus moveStatus, Guid currentPlayer)
+        {
+            From = from;
+            To = to;
+            MoveStatus = moveStatus;
+            CurrentPlayer = currentPlayer;
+        }
     }
 }

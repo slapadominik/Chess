@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Chess.API.Exceptions;
+using Chess.API.Helpers;
 using Chess.API.Services.Interfaces;
 using Chess.Logic;
 using Chess.Logic.Exceptions;
@@ -16,13 +17,15 @@ namespace Chess.API.Hubs
         private readonly IUserService _userService;
         private readonly IGameService _gameService;
         private readonly ILogger _logger;
+        private readonly IExceptionHandler _exceptionHandler;
 
-        public GameHub(ITableService tableService, IUserService userService, IGameService gameService, ILogger<GameHub> logger)
+        public GameHub(ITableService tableService, IUserService userService, IGameService gameService, ILogger<GameHub> logger, IExceptionHandler exceptionHandler)
         {
             _tableService = tableService;
             _userService = userService;
             _gameService = gameService;
             _logger = logger;
+            _exceptionHandler = exceptionHandler;
         }
 
         public override async Task OnConnectedAsync()
@@ -113,8 +116,9 @@ namespace Chess.API.Hubs
                 var moveResult = game.MakeMove(playerId, from, to);
                 await Clients.All.SendAsync("MakeMove_Result", moveResult);
             }
-            catch (GameNotExistException ex)
+            catch (Exception ex)
             {
+                _exceptionHandler.Handle(ex);
                 await Clients.Caller.SendAsync("MakeMove_Error", ex.Message);
             }
         }

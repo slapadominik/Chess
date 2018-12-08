@@ -10,7 +10,6 @@ namespace Chess.Logic
     public class Game : IGame
     {
         private IBoard _board;
-
         private Player _playerWhite;
         private Player _playerBlack;
         private Player _currentPlayer;
@@ -58,7 +57,7 @@ namespace Chess.Logic
             return _id;
         }
 
-        public MoveStatus MakeMove(Guid playerId, string @from, string to)
+        public MoveResult MakeMove(Guid playerId, string @from, string to)
         {
             if (!_gameStarted)
             {
@@ -69,8 +68,6 @@ namespace Chess.Logic
             {
                 throw new NotACurrentPlayerException($"Game {_id}: Player {playerId} is not a current player.");
             }
-
-            CheckIfFieldsExist(from, to);
 
             var figure = _board.GetChessman(@from);
             if (figure == null)
@@ -84,25 +81,10 @@ namespace Chess.Logic
                     $"Game {_id}: Player {_currentPlayer.Color} can't move Chessman {figure.GetColor()}");
             }
 
-            try
-            {
-                var moveResult = figure.MakeMove(_board, from, to);
-                _moves++;
-                _currentPlayer = SetCurrentPlayer();
-                return moveResult.MoveStatus;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        private void CheckIfFieldsExist(string from, string to)
-        {
-            if (_board.FieldExists(from) && _board.FieldExists(to))
-            {
-                throw new InvalidFieldException();
-            }
+            var moveStatus = figure.MakeMove(_board, from, to);
+            _moves++;
+            _currentPlayer = SetCurrentPlayer();
+            return CreateMoveResult(from, to, moveStatus, CurrentPlayer.Id);
         }
 
         private Player SetCurrentPlayer()
@@ -115,6 +97,9 @@ namespace Chess.Logic
             return _currentPlayer.Id == id;
         }
 
-       
+        private MoveResult CreateMoveResult(string from, string to, MoveStatus moveStatus, Guid currentPlayer) 
+        {
+            return new MoveResult(from, to, moveStatus, currentPlayer);
+        }
     }
 }

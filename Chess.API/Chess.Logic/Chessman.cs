@@ -20,7 +20,7 @@ namespace Chess.Logic
             return _color;
         }
 
-        public abstract MoveResult MakeMove(IBoard board, string @from, string @to);
+        public abstract MoveStatus MakeMove(IBoard board, string @from, string @to);
 
     }
 }
