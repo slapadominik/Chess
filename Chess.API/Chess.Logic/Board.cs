@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
 using Chess.Logic.Interfaces;
@@ -28,6 +29,16 @@ namespace Chess.Logic
         public Chessman GetChessman(string location)
         {
             return _board.ContainsKey(location) ? _board[location] : throw new InvalidFieldException();
+        }
+
+        public Type GetChessmanType(string location)
+        {
+            if (!_board.ContainsKey(location))
+            {
+                throw new InvalidFieldException();
+            }
+
+            return _board[location]?.GetType();
         }
 
         public void SetChessman(string location, Chessman chessman)

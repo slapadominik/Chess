@@ -33,27 +33,31 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            int directionIndicator;
+            if (typeof(King) == (board.GetChessmanType(to)))
+            {
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - there is opponent's king.");
+            }
 
-            var validMoves = GetValidMovesByDestinationDirection(to, out directionIndicator);
-            ValidatePath(board, to, validMoves, directionIndicator);
-            var moveStatus = GetMoveStatusOfMove(board, to);
+            var directionIndicator = GetDirectionIndicator(to);
+            ValidatePath(board, to, directionIndicator);
+            var moveType = RecognizeMoveType(board, to);
             var from = CurrentLocation;
             MoveToDestination(board, to);
-            return new MoveResult(from, to, moveStatus, GetColor());
+
+            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
         }
 
-        public MoveStatus GetMoveStatusOfMove(IBoard board, string to)
+        public (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
         {
             if (board.GetChessman(to) != null)
             {
-                return MoveStatus.Capture;
+                return (MoveStatus.Capture, board.GetChessmanType(to).Name);
             }
 
-            return MoveStatus.Normal;
+            return (MoveStatus.Normal,null);
         }
 
-        private void ValidatePath(IBoard board, string to, IEnumerable<int> validMoves, int directionIndicator)
+        private void ValidatePath(IBoard board, string to, int directionIndicator)
         {
             var valueFrom = LocationToNumberMapper[CurrentLocation];
             var valueTo = LocationToNumberMapper[to];
@@ -70,7 +74,7 @@ namespace Chess.Logic.Figures
             }
         }
 
-        private IEnumerable<int> GetValidMovesByDestinationDirection(string to, out int directionIndicator)
+        private int GetDirectionIndicator(string to)
         {
             if (LocationToNumberMapper.ContainsKey(to))
             {
@@ -80,23 +84,19 @@ namespace Chess.Logic.Figures
 
                 if (diff < 0 && diff % TOP_LEFT_INDICATOR == 0)
                 {
-                    directionIndicator = TOP_LEFT_INDICATOR;
-                    return _validMovesTopLeft;
+                    return TOP_LEFT_INDICATOR;
                 }
                 if (diff < 0 && diff % TOP_RIGHT_INDICATOR == 0)
                 {
-                    directionIndicator = TOP_RIGHT_INDICATOR;
-                    return _validMovesTopRight;
+                    return TOP_RIGHT_INDICATOR;
                 }
                 if (diff > 0 && diff % DOWN_LEFT_INDICATOR == 0)
                 {
-                    directionIndicator = DOWN_LEFT_INDICATOR;
-                    return _validMovesDownLeft;
+                    return DOWN_LEFT_INDICATOR;
                 }
                 if (diff > 0 && diff % DOWN_RIGHT_INDICATOR == 0)
                 {
-                    directionIndicator = DOWN_RIGHT_INDICATOR;
-                    return _validMovesDownRight;
+                    return DOWN_RIGHT_INDICATOR;
                 }
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
