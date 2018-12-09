@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Chess.Logic.Exceptions;
-using Chess.Logic.Helpers;
 using Chess.Logic.Interfaces;
 
 namespace Chess.Logic.Figures
@@ -23,7 +22,7 @@ namespace Chess.Logic.Figures
             _validCaptureMoves = new int[] {9, -9, 7, -7};
         }
 
-        public override MoveStatus MakeMove(IBoard board, string from, string to)
+        public override MoveResult Move(IBoard board, string from, string to)
         {
             if (board.GetChessman(to) == null)
             {
@@ -33,22 +32,22 @@ namespace Chess.Logic.Figures
             return MakeCaptureMove(board, from, to);
         }
 
-        private MoveStatus MakeNonCaptureMove(IBoard board, string from, string to)
+        private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
             if (IsFirstMove)
             {
-                ValidateMove(board, from, to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor()));
+                ValidateMove(from, to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor()));
                 IsFirstMove = false;
             }
             else
             {
-                ValidateMove(board, from, to, FilterValidMoves(_validNormalMoves, GetColor()));
+                ValidateMove(from, to, FilterValidMoves(_validNormalMoves, GetColor()));
             }
-            Move(board, from, to);
-            return MoveStatus.Normal;
+            SwapPieces(board, from, to);
+            return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
 
-        private MoveStatus MakeCaptureMove(IBoard board, string from, string to)
+        private MoveResult MakeCaptureMove(IBoard board, string from, string to)
         {
             if (board.GetChessman(to).GetColor() == GetColor())
             {
@@ -57,16 +56,16 @@ namespace Chess.Logic.Figures
             //TODO: implementacja przypadku promocji pionka
             if (IsFirstMove)
             {
-                ValidateMove(board, from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
+                ValidateMove(from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
                 IsFirstMove = false;
             }
             else
             {
-                ValidateMove(board, from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
+                ValidateMove(from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
             }
 
-            Move(board, from, to);
-            return MoveStatus.Capture;
+            SwapPieces(board, from, to);
+            return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 
         private IEnumerable<int> FilterValidMoves(IEnumerable<int> moves, Color color)

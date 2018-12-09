@@ -81,10 +81,10 @@ namespace Chess.Logic
                     $"Game {_id}: Player {_currentPlayer.Color} can't move Chessman {figure.GetColor()}");
             }
 
-            var moveStatus = figure.MakeMove(_board, from, to);
+            var moveResult = figure.Move(_board, from, to);
             _moves++;
             _currentPlayer = SetCurrentPlayer();
-            return CreateMoveResult(from, to, moveStatus, CurrentPlayer.Id);
+            return moveResult;
         }
 
         private Player SetCurrentPlayer()
@@ -95,11 +95,6 @@ namespace Chess.Logic
         private bool IsCurrentPlayer(Guid id)
         {
             return _currentPlayer.Id == id;
-        }
-
-        private MoveResult CreateMoveResult(string from, string to, MoveStatus moveStatus, Guid currentPlayer) 
-        {
-            return new MoveResult(from, to, moveStatus, currentPlayer);
         }
     }
 }

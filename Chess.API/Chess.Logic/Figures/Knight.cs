@@ -14,7 +14,7 @@ namespace Chess.Logic.Figures
             _validMoves = new int[] {-17, 17, -15, 15, 10, -10, 6};
         }
 
-        public override MoveStatus MakeMove(IBoard board, string @from, string to)
+        public override MoveResult Move(IBoard board, string @from, string to)
         {
             if (board.GetChessman(to) == null)
             {
@@ -24,25 +24,24 @@ namespace Chess.Logic.Figures
             return MakeCaptureMove(board, from, to);
         }
 
-        private MoveStatus MakeNonCaptureMove(IBoard board, string from, string to)
+        private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
-
-            ValidateMove(board, from, to, _validMoves);
-            Move(board, from, to);
-            return MoveStatus.Normal;
+            ValidateMove(from, to, _validMoves);
+            SwapPieces(board, from, to);
+            return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
 
-        private MoveStatus MakeCaptureMove(IBoard board, string from, string to)
+        private MoveResult MakeCaptureMove(IBoard board, string from, string to)
         {
             if (board.GetChessman(to).GetColor() == GetColor())
             {
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            ValidateMove(board, from, to, _validMoves);
+            ValidateMove(from, to, _validMoves);
 
-            Move(board, from, to);
-            return MoveStatus.Capture;
+            SwapPieces(board, from, to);
+            return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 
         public override bool Equals(object obj)

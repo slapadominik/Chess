@@ -8,14 +8,14 @@ namespace Chess.Logic
         public string From { get; }
         public string To { get; }
         public MoveStatus MoveStatus { get; }
-        public Guid CurrentPlayer { get; }
+        public Color Color { get; }
 
-        public MoveResult(string from, string to, MoveStatus moveStatus, Guid currentPlayer)
+        public MoveResult(string from, string to, MoveStatus moveStatus, Color color)
         {
             From = from;
             To = to;
             MoveStatus = moveStatus;
-            CurrentPlayer = currentPlayer;
+            Color = color;
         }
     }
 }

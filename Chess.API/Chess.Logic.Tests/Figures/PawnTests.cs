@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
-using Chess.Logic.Helpers.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -14,13 +13,11 @@ namespace Chess.Logic.Tests.Figures
     {
         private Pawn _sut;
         private Board _board;
-        private Mock<IMoveValidator> _moveValidatorMock;
 
         [SetUp]
         public void SetUp()
         {
-            _moveValidatorMock = new Mock<IMoveValidator>();
-            _board = new Board(_moveValidatorMock.Object);
+            _board = new Board();
         }
 
         [TestCase("d2", "d3")]
@@ -29,10 +26,9 @@ namespace Chess.Logic.Tests.Figures
         {
             //Arrange
             _sut = new Pawn(Color.White);
-            _moveValidatorMock.Setup(x => x.IsMoveValid(It.IsAny<IEnumerable<int>>(), from, to)).Returns(true);
 
             //Act
-            var result = _sut.MakeMove(_board, from, to);
+            var result = _sut.Move(_board, from, to);
 
             //Assert
             result.Should().NotBeNull();
@@ -51,7 +47,7 @@ namespace Chess.Logic.Tests.Figures
             _board.SetChessman(to, null);
 
             //Act //Assert
-            Assert.Throws<InvalidMoveException>(() => _sut.MakeMove(_board, from, to));
+            Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, from, to));
         }
 
         [TestCase("d2", "d4")]
@@ -64,7 +60,7 @@ namespace Chess.Logic.Tests.Figures
             _board.SetChessman(to, new Bishop(Color.White));
 
             //Act //Assert
-            Assert.Throws<InvalidMoveException>(() => _sut.MakeMove(_board, from, to));
+            Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, from, to));
         }
 
         [TestCase("d2", "c3", Color.White, Color.Black)]
@@ -76,10 +72,9 @@ namespace Chess.Logic.Tests.Figures
             _sut.IsFirstMove = false;
             _board.SetChessman(from, _sut);
             _board.SetChessman(to, new Bishop(opponentColor));
-            _moveValidatorMock.Setup(x => x.IsMoveValid(It.IsAny<IEnumerable<int>>(), from, to)).Returns(true);
 
             //Act
-            var result = _sut.MakeMove(_board, from, to);
+            var result = _sut.Move(_board, from, to);
 
             //Assert
             result.Should().NotBeNull();

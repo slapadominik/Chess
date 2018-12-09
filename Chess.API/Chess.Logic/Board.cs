@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
-using Chess.Logic.Helpers.Interfaces;
 using Chess.Logic.Interfaces;
 
 namespace Chess.Logic
@@ -9,9 +8,8 @@ namespace Chess.Logic
     public class Board : IBoard
     {
         private readonly IDictionary<string, Chessman> _board;
-        private readonly IMoveValidator _moveValidator;
 
-        public Board(IMoveValidator moveValidator)
+        public Board()
         {
             _board = new Dictionary<string, Chessman>
             {
@@ -24,7 +22,6 @@ namespace Chess.Logic
                 {Locations.A2, new Pawn(Color.White)}, {Locations.B2, new Pawn(Color.White)}, {Locations.C2, new Pawn(Color.White)}, {Locations.D2, new Pawn(Color.White)}, {Locations.E2, new Pawn(Color.White)}, {Locations.F2, new Pawn(Color.White)}, {Locations.G2, new Pawn(Color.White)}, {Locations.H2, new Pawn(Color.White)},
                 {Locations.A1, new Rook(Color.White)}, {Locations.B1, new Knight(Color.White)}, {Locations.C1, new Bishop(Color.White)}, {Locations.D1, new Queen(Color.White)}, {Locations.E1, new King(Color.White)}, {Locations.F1, new Bishop(Color.White)}, {Locations.G1, new Knight(Color.White)}, {Locations.H1, new Rook(Color.White)}
             };
-            _moveValidator = moveValidator;
         }
 
 
@@ -41,11 +38,6 @@ namespace Chess.Logic
         public bool FieldExists(string field)
         {
             return _board.ContainsKey(field);
-        }
-
-        public bool IsMoveValid(IEnumerable<int> availableMoves, string @from, string to)
-        {
-            return _moveValidator.IsMoveValid(availableMoves, from, to);
         }
     }
 }
