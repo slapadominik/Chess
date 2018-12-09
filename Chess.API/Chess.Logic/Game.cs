@@ -81,7 +81,7 @@ namespace Chess.Logic
                     $"Game {_id}: Player {_currentPlayer.Color} can't move Chessman {figure.GetColor()}");
             }
 
-            var moveResult = figure.Move(_board, from, to);
+            var moveResult = figure.Move(_board, to);
             _moves++;
             _currentPlayer = SetCurrentPlayer();
             return moveResult;

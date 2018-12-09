@@ -28,7 +28,7 @@ namespace Chess.Logic.Tests.Figures
             //_sut = new Pawn(Color.White);
 
             //Act
-            var result = _sut.Move(_board, from, to);
+            var result = _sut.Move(_board, to);
 
             //Assert
             result.Should().NotBeNull();
@@ -47,7 +47,7 @@ namespace Chess.Logic.Tests.Figures
             _board.SetChessman(to, null);
 
             //Act //Assert
-            Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, from, to));
+            Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, to));
         }
 
         [TestCase("d2", "d4")]
@@ -60,7 +60,7 @@ namespace Chess.Logic.Tests.Figures
             //_board.SetChessman(to, new Bishop(Color.White));
 
             //Act //Assert
-            Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, from, to));
+            Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, to));
         }
 
         [TestCase("d2", "c3", Color.White, Color.Black)]
@@ -74,7 +74,7 @@ namespace Chess.Logic.Tests.Figures
            // _board.SetChessman(to, new Bishop(opponentColor));
 
             //Act
-            var result = _sut.Move(_board, from, to);
+            var result = _sut.Move(_board, to);
 
             //Assert
             result.Should().NotBeNull();

@@ -34,7 +34,7 @@ namespace Chess.Logic
             return _color;
         }
 
-        public abstract MoveResult Move(IBoard board, string @from, string @to);
+        public abstract MoveResult Move(IBoard board, string @to);
 
         protected virtual void ValidateMove(string from, string to, IEnumerable<int> validMoves)
         {

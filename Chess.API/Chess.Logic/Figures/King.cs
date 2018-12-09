@@ -13,14 +13,14 @@ namespace Chess.Logic.Figures
             _validMoves = new int[] {-9, -8, -7, -1, 1, 7, 8, 9};
         }
 
-        public override MoveResult Move(IBoard board, string @from, string to)
+        public override MoveResult Move(IBoard board, string to)
         {
             if (board.GetChessman(to) == null)
             {
-                return MakeNonCaptureMove(board, from, to);
+                return MakeNonCaptureMove(board, CurrentLocation, to);
             }
 
-            return MakeCaptureMove(board, from, to);
+            return MakeCaptureMove(board, CurrentLocation, to);
         }
 
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
