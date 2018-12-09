@@ -36,11 +36,11 @@ namespace Chess.Logic
 
         public abstract MoveResult Move(IBoard board, string @to);
 
-        protected virtual void ValidateMove(string from, string to, IEnumerable<int> validMoves)
+        protected virtual void ValidateMove(string to, IEnumerable<int> validMoves)
         {
-            if (LocationToNumberMapper.ContainsKey(@from) && LocationToNumberMapper.ContainsKey(to))
+            if (LocationToNumberMapper.ContainsKey(to))
             {
-                var valueFrom = LocationToNumberMapper[@from];
+                var valueFrom = LocationToNumberMapper[CurrentLocation];
                 var valueTo = LocationToNumberMapper[to];
                 foreach (var validMove in validMoves)
                 {
@@ -51,13 +51,13 @@ namespace Chess.Logic
                 }
             }
 
-            throw new InvalidMoveException($"{GetType()} cannot make move: {from}:{to}");
+            throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
         }
 
-        protected virtual void SwapPieces(IBoard board, string from, string to)
+        protected virtual void MoveToDestination(IBoard board, string to)
         {
             board.SetChessman(to, this);
-            board.SetChessman(from, null);
+            board.SetChessman(CurrentLocation, null);
             CurrentLocation = to;
         }
     }

@@ -32,8 +32,8 @@ namespace Chess.Logic.Figures
 
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
-            ValidateMove(from, to, _validMovesDownRight);
-            SwapPieces(board, from, to);
+            ValidateMove(to, _validMovesDownRight);
+            MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
 
@@ -44,9 +44,27 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            ValidateMove( from, to, _validMovesDownRight);
-            SwapPieces(board, from, to);
+            ValidateMove(to, _validMovesDownRight);
+            MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
+        }
+
+        protected override void ValidateMove(string to, IEnumerable<int> validMoves)
+        {
+            if (LocationToNumberMapper.ContainsKey(to))
+            {
+                var valueFrom = LocationToNumberMapper[CurrentLocation];
+                var valueTo = LocationToNumberMapper[to];
+                foreach (var validMove in validMoves)
+                {
+                    if (valueTo - valueFrom == validMove)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
         }
 
         public override bool Equals(object obj)

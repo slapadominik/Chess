@@ -11,7 +11,7 @@ namespace Chess.Logic.Figures
 
         public Knight(Color color, string currentLocation) : base(color, currentLocation)
         {
-            _validMoves = new int[] {-17, 17, -15, 15, 10, -10, 6};
+            _validMoves = new int[] {-17, 17, -15, 15, 10, -10, 6, -6};
         }
 
         public override MoveResult Move(IBoard board,string to)
@@ -26,8 +26,8 @@ namespace Chess.Logic.Figures
 
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
-            ValidateMove(from, to, _validMoves);
-            SwapPieces(board, from, to);
+            ValidateMove(to, _validMoves);
+            MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
 
@@ -38,9 +38,9 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            ValidateMove(from, to, _validMoves);
+            ValidateMove(to, _validMoves);
 
-            SwapPieces(board, from, to);
+            MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 

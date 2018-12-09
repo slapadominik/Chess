@@ -36,14 +36,14 @@ namespace Chess.Logic.Figures
         {
             if (IsFirstMove)
             {
-                ValidateMove(from, to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor()));
+                ValidateMove(to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor()));
                 IsFirstMove = false;
             }
             else
             {
-                ValidateMove(from, to, FilterValidMoves(_validNormalMoves, GetColor()));
+                ValidateMove(to, FilterValidMoves(_validNormalMoves, GetColor()));
             }
-            SwapPieces(board, from, to);
+            MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
 
@@ -56,15 +56,15 @@ namespace Chess.Logic.Figures
             //TODO: implementacja przypadku promocji pionka
             if (IsFirstMove)
             {
-                ValidateMove(from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
+                ValidateMove(to, FilterValidMoves(_validCaptureMoves, GetColor()));
                 IsFirstMove = false;
             }
             else
             {
-                ValidateMove(from, to, FilterValidMoves(_validCaptureMoves, GetColor()));
+                ValidateMove(to, FilterValidMoves(_validCaptureMoves, GetColor()));
             }
 
-            SwapPieces(board, from, to);
+            MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 
