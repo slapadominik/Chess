@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Interfaces;
@@ -22,6 +23,9 @@ namespace Chess.Logic
             {Locations.A2, 49}, {Locations.B2, 50}, {Locations.C2, 51}, {Locations.D2, 52}, {Locations.E2, 53}, {Locations.F2, 54}, {Locations.G2, 55}, {Locations.H2, 56},
             {Locations.A1, 57}, {Locations.B1, 58}, {Locations.C1, 59}, {Locations.D1, 60}, {Locations.E1, 61}, {Locations.F1, 62}, {Locations.G1, 63}, {Locations.H1, 64}
         };
+
+        protected static readonly Dictionary<int, string> NumberToLocationMapper =
+            LocationToNumberMapper.ToDictionary(kp => kp.Value, kp => kp.Key);
 
         public Chessman(Color color, string currentLocation)
         {
