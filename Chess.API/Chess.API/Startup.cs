@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Chess.API.Helpers;
 using Chess.API.Hubs;
 using Chess.API.Persistence.Implementation;
 using Chess.API.Persistence.Interfaces;
@@ -25,6 +26,7 @@ namespace Chess.API
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -50,7 +52,8 @@ namespace Chess.API
             services.AddTransient<IUserService, UserService>();
             services.AddSingleton<IGameManager, GameManager>();
             services.AddSingleton<ITableService, TableService>();
-
+            services.AddTransient<IGameService, GameService>();
+            services.AddTransient<IExceptionHandler, ExceptionHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,6 +74,7 @@ namespace Chess.API
             {
                 routes.MapHub<ValuesHub>("/Hubs/Values");
                 routes.MapHub<TableHub>("/Hubs/Tables");
+                routes.MapHub<GameHub>("/Hubs/Games");
             });
             app.UseMvc();
         }

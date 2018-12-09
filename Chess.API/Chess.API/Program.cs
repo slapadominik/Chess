@@ -21,14 +21,10 @@ namespace Chess.API
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
+                .ConfigureAppConfiguration((hostingContext, config) => { config.AddJsonFile("appsettings.json", optional:true, reloadOnChange:true); })
                 .ConfigureLogging((ctx, logging) =>
                 {
-                    logging.AddElmahIo(options =>
-                    {
-                        options.ApiKey = "b7d09314a23d42819019297b552ad941";
-                        options.LogId = new Guid("24e90655-7ef8-4650-9133-9ed96c2e5efe");
-                    });
-                    logging.AddFilter<ElmahIoLoggerProvider>(null, LogLevel.Warning);
-                });
+                    logging.AddConfiguration(ctx.Configuration.GetSection("Logging"));
+                 });
     }
 }

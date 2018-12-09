@@ -9,7 +9,7 @@
         public static string A5 = "a5";
         public static string A6 = "a6";
         public static string A7 = "a7";
-        public static string A8 = "a7";
+        public static string A8 = "a8";
         public static string B1 = "b1";
         public static string B2 = "b2";
         public static string B3 = "b3";
@@ -25,7 +25,7 @@
         public static string C5 = "c5";
         public static string C6 = "c6";
         public static string C7 = "c7";
-        public static string C8 = "b8";
+        public static string C8 = "c8";
         public static string D1 = "d1";
         public static string D2 = "d2";
         public static string D3 = "d3";
