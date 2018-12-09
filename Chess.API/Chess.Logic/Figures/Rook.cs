@@ -4,7 +4,7 @@ namespace Chess.Logic.Figures
 {
     public class Rook : Chessman
     {
-        public Rook(Color color) : base(color)
+        public Rook(Color color, string currentLocation) : base(color, currentLocation)
         {
         }
 

@@ -25,7 +25,7 @@ namespace Chess.Logic.Tests.Figures
         public void MakeMove_WhenDestinationFieldDoesNotHaveChessman_IsFirstMove_MoveIsValid_ReturnsNormalMoveResult(string from, string to)
         {
             //Arrange
-            _sut = new Pawn(Color.White);
+            //_sut = new Pawn(Color.White);
 
             //Act
             var result = _sut.Move(_board, from, to);
@@ -41,7 +41,7 @@ namespace Chess.Logic.Tests.Figures
         public void MakeMoves_WhenDestinationFieldDoesNotHaveChessman_IsNotFirstMove_MoveIsInvalid_ThrowsInvalidMoveException(string from, string to)
         {
             //Arrange
-            _sut = new Pawn(Color.White);
+            //_sut = new Pawn(Color.White);
             _sut.IsFirstMove = false;
             _board.SetChessman(from, _sut);
             _board.SetChessman(to, null);
@@ -54,10 +54,10 @@ namespace Chess.Logic.Tests.Figures
         public void MakeMoves_WhenDestinationFieldDoesHaveChessmanWithTheSameColor_MoveIsInvalid_ThrowsInvalidMoveException(string from, string to)
         {
             //Arrange
-            _sut = new Pawn(Color.White);
+            //_sut = new Pawn(Color.White);
             _sut.IsFirstMove = false;
             _board.SetChessman(from, _sut);
-            _board.SetChessman(to, new Bishop(Color.White));
+            //_board.SetChessman(to, new Bishop(Color.White));
 
             //Act //Assert
             Assert.Throws<InvalidMoveException>(() => _sut.Move(_board, from, to));
@@ -68,10 +68,10 @@ namespace Chess.Logic.Tests.Figures
         public void MakeMoves_WhenDestinationFieldDoesHaveChessmanWithOpponentColor_MoveIsValid_ReturnsCaptureMoveResult(string from, string to, Color myColor, Color opponentColor)
         {
             //Arrange
-            _sut = new Pawn(myColor);
+            //_sut = new Pawn(myColor);
             _sut.IsFirstMove = false;
             _board.SetChessman(from, _sut);
-            _board.SetChessman(to, new Bishop(opponentColor));
+           // _board.SetChessman(to, new Bishop(opponentColor));
 
             //Act
             var result = _sut.Move(_board, from, to);

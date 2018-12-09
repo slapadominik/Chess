@@ -12,7 +12,7 @@ namespace Chess.Logic.Figures
         private IEnumerable<int> _validMovesDownLeft;
         private IEnumerable<int> _validMovesDownRight;
 
-        public Bishop(Color color) : base(color)
+        public Bishop(Color color, string currentLocation) : base(color, currentLocation)
         {
             _validMovesTopLeft = Enumerable.Range(1, 7).Select(a => a * (-9));
             _validMovesTopRight = Enumerable.Range(1, 7).Select(y => y * (-7));

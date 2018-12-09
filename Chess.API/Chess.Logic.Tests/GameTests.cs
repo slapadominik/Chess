@@ -54,7 +54,7 @@ namespace Chess.Logic.Tests
         {
             //Arrange
             string locationFrom = "b3";
-            _boardMock.Setup(x => x.GetChessman(locationFrom)).Returns(new Pawn(Color.Black));
+            //_boardMock.Setup(x => x.GetChessman(locationFrom)).Returns(new Pawn(Color.Black));
 
             //Act, Assert
             Assert.Throws<WrongPlayerChessmanException>(() => _sut.MakeMove(_playerWhite.Id, "b3", "b4"));

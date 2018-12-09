@@ -23,9 +23,10 @@ namespace Chess.Logic
             {Locations.A1, 57}, {Locations.B1, 58}, {Locations.C1, 59}, {Locations.D1, 60}, {Locations.E1, 61}, {Locations.F1, 62}, {Locations.G1, 63}, {Locations.H1, 64}
         };
 
-        public Chessman(Color color)
+        public Chessman(Color color, string currentLocation)
         {
             _color = color;
+            CurrentLocation = currentLocation;
         }
 
         public Color GetColor()
@@ -57,6 +58,7 @@ namespace Chess.Logic
         {
             board.SetChessman(to, this);
             board.SetChessman(from, null);
+            CurrentLocation = to;
         }
     }
 }

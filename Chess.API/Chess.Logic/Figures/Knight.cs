@@ -9,7 +9,7 @@ namespace Chess.Logic.Figures
     {
         private int[] _validMoves;
 
-        public Knight(Color color) : base(color)
+        public Knight(Color color, string currentLocation) : base(color, currentLocation)
         {
             _validMoves = new int[] {-17, 17, -15, 15, 10, -10, 6};
         }

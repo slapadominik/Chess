@@ -14,7 +14,7 @@ namespace Chess.Logic.Figures
         private readonly int[] _validFirstMoves;
         private readonly int[] _validCaptureMoves;
 
-        public Pawn(Color color) : base(color)
+        public Pawn(Color color, string currentLocation) : base(color, currentLocation)
         {
             IsFirstMove = true;
             _validNormalMoves = new int[] {8, -8};

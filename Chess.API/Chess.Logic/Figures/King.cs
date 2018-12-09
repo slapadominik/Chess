@@ -8,7 +8,7 @@ namespace Chess.Logic.Figures
     {
         private int[] _validMoves;
 
-        public King(Color color) : base(color)
+        public King(Color color, string currentLocation) : base(color, currentLocation)
         {
             _validMoves = new int[] {-9, -8, -7, -1, 1, 7, 8, 9};
         }

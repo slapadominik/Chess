@@ -4,7 +4,7 @@ namespace Chess.Logic.Figures
 {
     public class Queen : Chessman
     {
-        public Queen(Color color) : base(color)
+        public Queen(Color color, string currentLocation) : base(color, currentLocation)
         {
         }
 
