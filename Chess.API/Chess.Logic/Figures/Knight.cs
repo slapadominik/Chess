@@ -24,9 +24,31 @@ namespace Chess.Logic.Figures
             return MakeCaptureMove(board, CurrentLocation, to);
         }
 
+        public override bool CanAttackField(IBoard board, string to)
+        {
+            if (LocationToNumberMapper.ContainsKey(to))
+            {
+                var valueFrom = LocationToNumberMapper[CurrentLocation];
+                var valueTo = LocationToNumberMapper[to];
+                foreach (var validMove in _validMoves)
+                {
+                    if (valueTo - valueFrom == validMove)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
-            ValidateMove(to, _validMoves);
+            if (!CanAttackField(board, to))
+            {
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+            }
             MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
@@ -38,7 +60,10 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            ValidateMove(to, _validMoves);
+            if (!CanAttackField(board, to))
+            {
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+            }
 
             MoveToDestination(board, to);
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());

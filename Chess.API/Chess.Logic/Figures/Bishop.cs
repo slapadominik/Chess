@@ -13,6 +13,7 @@ namespace Chess.Logic.Figures
         private IEnumerable<int> _validMovesDownLeft;
         private IEnumerable<int> _validMovesDownRight;
 
+
         private const int TOP_LEFT_INDICATOR = -9;
         private const int TOP_RIGHT_INDICATOR = -7;
         private const int DOWN_LEFT_INDICATOR = 7;
@@ -28,23 +29,41 @@ namespace Chess.Logic.Figures
 
         public override MoveResult Move(IBoard board, string to)
         {
+            var from = CurrentLocation;
+            if (!CanAttackField(board, to))
+            {
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+            }
+            var moveType = RecognizeMoveType(board, to);      
+            MoveToDestination(board, to);
+
+            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
+        }
+
+        public override bool CanAttackField(IBoard board, string to)
+        {
             if (board.GetChessman(to)?.GetColor() == GetColor())
             {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
+                return false;
             }
 
             if (typeof(King) == (board.GetChessmanType(to)))
             {
-                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - there is opponent's king.");
+                return false;
             }
 
             var directionIndicator = GetDirectionIndicator(to);
-            ValidatePath(board, to, directionIndicator);
-            var moveType = RecognizeMoveType(board, to);
-            var from = CurrentLocation;
-            MoveToDestination(board, to);
+            if (directionIndicator == null)
+            {
+                return false;
+            }
 
-            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
+            if (IsCollisionOnPath(board, to, directionIndicator.Value))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
@@ -57,7 +76,7 @@ namespace Chess.Logic.Figures
             return (MoveStatus.Normal,null);
         }
 
-        private void ValidatePath(IBoard board, string to, int directionIndicator)
+        private bool IsCollisionOnPath(IBoard board, string to, int directionIndicator)
         {
             var valueFrom = LocationToNumberMapper[CurrentLocation];
             var valueTo = LocationToNumberMapper[to];
@@ -68,13 +87,15 @@ namespace Chess.Logic.Figures
             {
                 if (board.GetChessman(NumberToLocationMapper[valueFrom + directionIndicator]) != null)
                 {
-                    throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - there are pieces on his path.");
+                    return true;
                 }
                 valueFrom += directionIndicator;
             }
+
+            return false;
         }
 
-        private int GetDirectionIndicator(string to)
+        private int? GetDirectionIndicator(string to)
         {
             if (LocationToNumberMapper.ContainsKey(to))
             {
@@ -98,11 +119,41 @@ namespace Chess.Logic.Figures
                 {
                     return DOWN_RIGHT_INDICATOR;
                 }
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+
+                return null;
             }
             throw new InvalidFieldException($"Destination field [{to}] doesn't exist!");
         }
 
+
+        private bool IsCheck(IBoard board)
+        {
+            bool topLeftPath = IsKingPresentOnPath(board, TOP_LEFT_INDICATOR);
+            bool topRightPath = IsKingPresentOnPath(board, TOP_RIGHT_INDICATOR);
+            bool downLeftPath = IsKingPresentOnPath(board, DOWN_LEFT_INDICATOR);
+            bool downRightPath = IsKingPresentOnPath(board, DOWN_RIGHT_INDICATOR);
+            return topLeftPath || topRightPath || downLeftPath || downRightPath;
+        }
+
+
+        private bool IsKingPresentOnPath(IBoard board, int directionIndicator)
+        {
+            var valueFrom = LocationToNumberMapper[CurrentLocation];
+            bool nearestPieceFound = false;
+            Chessman nearestPiece = null;
+
+            while (!nearestPieceFound)
+            {
+                if ((nearestPiece = board.GetChessman(NumberToLocationMapper[valueFrom + directionIndicator])) != null)
+                {
+                    nearestPieceFound = true;
+                }
+
+                valueFrom += directionIndicator;
+            }
+
+            return nearestPiece?.GetType() == typeof(King);
+        }
         public override bool Equals(object obj)
         {
             return ReferenceEquals(this, obj);

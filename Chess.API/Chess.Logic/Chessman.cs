@@ -10,7 +10,6 @@ namespace Chess.Logic
     {
         private readonly Color _color;
         protected string CurrentLocation { get; set; }
-        protected const int MOVE_INVALID = -1;
 
         protected static readonly Dictionary<string, int> LocationToNumberMapper = new Dictionary<string, int>
         {
@@ -38,25 +37,9 @@ namespace Chess.Logic
             return _color;
         }
 
-        public abstract MoveResult Move(IBoard board, string @to);
+        public abstract MoveResult Move(IBoard board, string to);
 
-        protected virtual void ValidateMove(string to, IEnumerable<int> validMoves)
-        {
-            if (LocationToNumberMapper.ContainsKey(to))
-            {
-                var valueFrom = LocationToNumberMapper[CurrentLocation];
-                var valueTo = LocationToNumberMapper[to];
-                foreach (var validMove in validMoves)
-                {
-                    if (valueTo - valueFrom == validMove)
-                    {
-                        return;
-                    }
-                }
-            }
-
-            throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-        }
+        public abstract bool CanAttackField(IBoard board, string to);
 
         protected virtual void MoveToDestination(IBoard board, string to)
         {

@@ -22,6 +22,18 @@ namespace Chess.Logic.Figures
             _validCaptureMoves = new int[] {9, -9, 7, -7};
         }
 
+        public override bool CanAttackField(IBoard board, string to)
+        {
+            
+            if (board.GetChessman(to)?.GetColor() == GetColor())
+            {
+                return false;
+            }
+
+            return IsMoveValid(to, FilterValidMoves(_validCaptureMoves, GetColor()));
+        }
+
+
         public override MoveResult Move(IBoard board, string to)
         {
             if (board.GetChessman(to) == null)
@@ -32,39 +44,54 @@ namespace Chess.Logic.Figures
             return MakeCaptureMove(board, CurrentLocation, to);
         }
 
+        private bool IsMoveValid(string to, IEnumerable<int> validMoves)
+        {
+            if (LocationToNumberMapper.ContainsKey(to))
+            {
+                var valueFrom = LocationToNumberMapper[CurrentLocation];
+                var valueTo = LocationToNumberMapper[to];
+                foreach (var validMove in validMoves)
+                {
+                    if (valueTo - valueFrom == validMove)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
             if (IsFirstMove)
             {
-                ValidateMove(to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor()));
-                IsFirstMove = false;
+                if (!IsMoveValid(to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor())))
+                {
+                    throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                }
             }
             else
             {
-                ValidateMove(to, FilterValidMoves(_validNormalMoves, GetColor()));
+                if (!IsMoveValid(to, FilterValidMoves(_validFirstMoves, GetColor())))
+                {
+                    throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                }
             }
+            
             MoveToDestination(board, to);
+            IsFirstMove = false;
             return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
 
         private MoveResult MakeCaptureMove(IBoard board, string from, string to)
         {
-            if (board.GetChessman(to).GetColor() == GetColor())
-            {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
-            }
             //TODO: implementacja przypadku promocji pionka
-            if (IsFirstMove)
+            if (!CanAttackField(board, to))
             {
-                ValidateMove(to, FilterValidMoves(_validCaptureMoves, GetColor()));
-                IsFirstMove = false;
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
-            else
-            {
-                ValidateMove(to, FilterValidMoves(_validCaptureMoves, GetColor()));
-            }
-
             MoveToDestination(board, to);
+            IsFirstMove = false;
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 

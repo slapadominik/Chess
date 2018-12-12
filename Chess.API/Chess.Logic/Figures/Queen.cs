@@ -12,5 +12,10 @@ namespace Chess.Logic.Figures
         {
             throw new System.NotImplementedException();
         }
+
+        public override bool CanAttackField(IBoard board, string to)
+        {
+            return false;
+        }
     }
 }
