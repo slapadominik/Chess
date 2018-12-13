@@ -72,7 +72,7 @@ namespace Chess.Logic.Figures
             }
             else
             {
-                if (!IsMoveValid(to, FilterValidMoves(_validFirstMoves, GetColor())))
+                if (!IsMoveValid(to, FilterValidMoves(_validNormalMoves, GetColor())))
                 {
                     throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
                 }
