@@ -16,15 +16,29 @@ namespace Chess.Logic.Figures
 
         public override MoveResult Move(IBoard board,string to)
         {
-            if (board.GetChessman(to) == null)
+            if (board.GetChessman(to)?.GetColor() == GetColor())
             {
-                return MakeNonCaptureMove(board, CurrentLocation, to);
+                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            return MakeCaptureMove(board, CurrentLocation, to);
+            if (!IsMoveValid(to))
+            {
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+            }
+
+            var from = CurrentLocation;
+            var moveType = RecognizeMoveType(board, to);
+            MoveToDestination(board, to);
+
+            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
         }
 
         public override bool CanAttackField(IBoard board, string to)
+        {
+            return IsMoveValid(to);
+        }
+
+        private bool IsMoveValid(string to)
         {
             if (LocationToNumberMapper.ContainsKey(to))
             {
@@ -40,33 +54,6 @@ namespace Chess.Logic.Figures
             }
 
             return false;
-        }
-
-
-        private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
-        {
-            if (!CanAttackField(board, to))
-            {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-            }
-            MoveToDestination(board, to);
-            return new MoveResult(from, to, MoveStatus.Normal, GetColor());
-        }
-
-        private MoveResult MakeCaptureMove(IBoard board, string from, string to)
-        {
-            if (board.GetChessman(to).GetColor() == GetColor())
-            {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
-            }
-
-            if (!CanAttackField(board, to))
-            {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-            }
-
-            MoveToDestination(board, to);
-            return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 
         public override bool Equals(object obj)

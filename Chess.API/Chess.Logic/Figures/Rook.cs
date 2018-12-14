@@ -43,16 +43,6 @@ namespace Chess.Logic.Figures
             return IsMoveValid(board, to);
         }
 
-        public (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
-        {
-            if (board.GetChessman(to) != null)
-            {
-                return (MoveStatus.Capture, board.GetChessmanType(to).Name);
-            }
-
-            return (MoveStatus.Normal, null);
-        }
-
         private bool IsMoveValid(IBoard board, string to)
         {
             var directionIndicator = GetDirectionIndicator(to);

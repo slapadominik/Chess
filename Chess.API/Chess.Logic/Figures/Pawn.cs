@@ -22,26 +22,24 @@ namespace Chess.Logic.Figures
             _validCaptureMoves = new int[] {9, -9, 7, -7};
         }
 
-        public override bool CanAttackField(IBoard board, string to)
-        {
-            
-            if (board.GetChessman(to)?.GetColor() == GetColor())
-            {
-                return false;
-            }
-
-            return IsMoveValid(to, FilterValidMoves(_validCaptureMoves, GetColor()));
-        }
-
-
         public override MoveResult Move(IBoard board, string to)
         {
+            if (board.GetChessman(to)?.GetColor() == GetColor())
+            {
+                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
+            }
+
             if (board.GetChessman(to) == null)
             {
                 return MakeNonCaptureMove(board, CurrentLocation, to);
             }
 
             return MakeCaptureMove(board, CurrentLocation, to);
+        }
+
+        public override bool CanAttackField(IBoard board, string to)
+        {
+            return IsMoveValid(to, FilterValidMoves(_validCaptureMoves, GetColor()));
         }
 
         private bool IsMoveValid(string to, IEnumerable<int> validMoves)

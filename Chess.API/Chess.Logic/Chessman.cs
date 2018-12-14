@@ -26,6 +26,12 @@ namespace Chess.Logic
         protected static readonly Dictionary<int, string> NumberToLocationMapper =
             LocationToNumberMapper.ToDictionary(kp => kp.Value, kp => kp.Key);
 
+        protected static readonly Dictionary<char, int> CharToColumnNumberMapper = new Dictionary<char, int>
+            {{'a', 1}, {'b', 2}, {'c', 3}, {'d', 4}, {'e', 5}, {'f', 6}, {'g', 7}, {'h', 8}};
+
+        protected static readonly Dictionary<int, char> ColumnNumberToCharMapper =
+            CharToColumnNumberMapper.ToDictionary(kp => kp.Value, kp => kp.Key);
+
         public Chessman(Color color, string currentLocation)
         {
             _color = color;
@@ -40,6 +46,16 @@ namespace Chess.Logic
         public abstract MoveResult Move(IBoard board, string to);
 
         public abstract bool CanAttackField(IBoard board, string to);
+
+        protected (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
+        {
+            if (board.GetChessman(to) != null)
+            {
+                return (MoveStatus.Capture, board.GetChessmanType(to).Name);
+            }
+
+            return (MoveStatus.Normal, null);
+        }
 
         protected virtual void MoveToDestination(IBoard board, string to)
         {
