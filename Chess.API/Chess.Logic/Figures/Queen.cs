@@ -30,11 +30,34 @@ namespace Chess.Logic.Figures
             var moveType = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
 
+            if (IsFriendlyKingInCheck(board, GetColor()))
+            {
+                MoveToDestination(board, from);
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+            }
+
             return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
         }
 
         public override bool CanAttackField(IBoard board, string to)
         {
+            if (to.Equals(CurrentLocation))
+            {
+                return false;
+            }
+
+            var horizontalVerticalDirectionIndicator = GetHorizontalVerticalDirectionIndicator(to);
+
+            if (horizontalVerticalDirectionIndicator.HasValue)
+            {
+                return !IsCollisionOnHorizontalVerticalPath(board, to, horizontalVerticalDirectionIndicator.Value);
+            }
+
+            if (IsDiagonalMove(to))
+            {
+                return IsDiagonalMoveLegal(board, to);
+            }
+
             return false;
         }
 
@@ -134,6 +157,21 @@ namespace Chess.Logic.Figures
                 }
                 valueFrom += directionIndicator;
             }
+            return false;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Queen)
+            {
+                return CurrentLocation.Equals(((Queen)obj).CurrentLocation);
+            }
+
             return false;
         }
     }

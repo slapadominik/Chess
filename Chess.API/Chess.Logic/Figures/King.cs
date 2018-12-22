@@ -71,7 +71,9 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - field is attacked");
             }
 
+            CaptureChessman(board, to);
             MoveToDestination(board, to);
+
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 
@@ -94,7 +96,17 @@ namespace Chess.Logic.Figures
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj);
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is King)
+            {
+                return CurrentLocation.Equals(((King)obj).CurrentLocation);
+            }
+
+            return false;
         }
     }
 }

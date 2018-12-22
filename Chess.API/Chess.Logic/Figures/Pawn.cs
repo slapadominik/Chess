@@ -60,7 +60,7 @@ namespace Chess.Logic.Figures
         }
 
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
-        {
+        {            
             if (IsFirstMove)
             {
                 if (!IsMoveValid(to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor())))
@@ -77,6 +77,11 @@ namespace Chess.Logic.Figures
             }
             
             MoveToDestination(board, to);
+            if (IsFriendlyKingInCheck(board, GetColor()))
+            {
+                MoveToDestination(board, from);
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+            }
             IsFirstMove = false;
             return new MoveResult(from, to, MoveStatus.Normal, GetColor());
         }
@@ -89,6 +94,12 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
             MoveToDestination(board, to);
+            if (IsFriendlyKingInCheck(board, GetColor()))
+            {
+                MoveToDestination(board, from);
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+            }
+
             IsFirstMove = false;
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
@@ -105,7 +116,17 @@ namespace Chess.Logic.Figures
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj);
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Pawn)
+            {
+                return CurrentLocation.Equals(((Pawn) obj).CurrentLocation);
+            }
+
+            return false;
         }
     }
 }

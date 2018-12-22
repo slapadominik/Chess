@@ -141,5 +141,21 @@ namespace Chess.Logic.Figures
 
             return false;
         }
+
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Rook)
+            {
+                return CurrentLocation.Equals(((Rook)obj).CurrentLocation);
+            }
+
+            return false;
+        }
     }
 }

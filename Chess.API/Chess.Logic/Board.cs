@@ -36,6 +36,22 @@ namespace Chess.Logic
             return _board.ContainsKey(location) ? _board[location] : throw new InvalidFieldException();
         }
 
+        public Chessman GetChessman<T>(Color color) where T : Chessman
+        {
+            return color == Color.White
+                ? _whiteFigures.Single(x => x.GetType() == typeof(T))
+                : _blackFigures.Single(x => x.GetType() == typeof(T));
+        }
+
+        public void RemoveChessman(Chessman chessman)
+        {
+            var figures = chessman.GetColor() == Color.White ? _whiteFigures : _blackFigures;
+            if (!figures.Remove(chessman))
+            {
+                throw new RemoveChessmanException($"{chessman.GetColor()} {typeof(Chessman)} not found on the board");
+            }
+        }
+
         public Type GetChessmanType(string location)
         {
             if (!_board.ContainsKey(location))

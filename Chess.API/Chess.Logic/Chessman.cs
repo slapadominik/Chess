@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using Chess.Logic.Exceptions;
+using Chess.Logic.Figures;
 using Chess.Logic.Interfaces;
 
 namespace Chess.Logic
@@ -47,6 +48,11 @@ namespace Chess.Logic
 
         public abstract bool CanAttackField(IBoard board, string to);
 
+        public bool IsFriendlyKingInCheck(IBoard board, Color color)
+        {
+            return board.IsFieldAttacked(board.GetChessman<King>(color).CurrentLocation, color);
+        }
+
         protected (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
         {
             if (board.GetChessman(to) != null)
@@ -62,6 +68,14 @@ namespace Chess.Logic
             board.SetChessman(to, this);
             board.SetChessman(CurrentLocation, null);
             CurrentLocation = to;
+        }
+
+        protected void CaptureChessman(IBoard board, string to)
+        {
+            if (board.GetChessman(to) != null)
+            {
+                board.RemoveChessman(board.GetChessman(to));
+            }
         }
     }
 }

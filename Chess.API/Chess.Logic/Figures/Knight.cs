@@ -29,7 +29,11 @@ namespace Chess.Logic.Figures
             var from = CurrentLocation;
             var moveType = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
-
+            if (IsFriendlyKingInCheck(board, GetColor()))
+            {
+                MoveToDestination(board, from);
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+            }
             return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
         }
 
@@ -56,9 +60,20 @@ namespace Chess.Logic.Figures
             return false;
         }
 
+
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj);
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Knight)
+            {
+                return CurrentLocation.Equals(((Knight)obj).CurrentLocation);
+            }
+
+            return false;
         }
     }
 }

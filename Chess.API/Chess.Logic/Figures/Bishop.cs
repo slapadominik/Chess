@@ -24,17 +24,28 @@ namespace Chess.Logic.Figures
             {
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
-
+             
             var from = CurrentLocation;
             var moveType = RecognizeMoveType(board, to);      
             MoveToDestination(board, to);
+
+            if (IsFriendlyKingInCheck(board, GetColor()))
+            {
+                MoveToDestination(board, from);
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+            }
 
             return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
         }
 
         public override bool CanAttackField(IBoard board, string to)
         {
-            return IsMoveValid(board, to);
+            if (to.Equals(CurrentLocation))
+            {
+                return false;
+            }
+
+            return IsDiagonalMove(to) && IsDiagonalMoveLegal(board, to);
         }
 
         private bool IsMoveValid(IBoard board, string to)
@@ -74,9 +85,20 @@ namespace Chess.Logic.Figures
             return true;
         }
 
+
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj);
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj is Bishop)
+            {
+                return CurrentLocation.Equals(((Bishop)obj).CurrentLocation);
+            }
+
+            return false;
         }
 
     }
