@@ -10,7 +10,9 @@ namespace Chess.Logic.Interfaces
         void SetChessman(string location, Chessman chessman);
         bool FieldExists(string field);
         bool IsFieldAttacked(string field, Color color);
-        Chessman GetChessman<T>(Color color) where T : Chessman;
+        T GetChessman<T>(Color color) where T : Chessman;
+        bool IsKingInCheck(Color color);
         void RemoveChessman(Chessman chessman);
+        IEnumerable<Chessman> GetPlayerFigures(Color color);
     }
 }

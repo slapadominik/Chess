@@ -30,14 +30,14 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
 
-            var capturedFigure = board.GetChessman(to);
             var from = CurrentLocation;
             var moveStatus = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
 
-            if (moveStatus.status == MoveStatus.Capture)
+            if (board.IsKingInCheck(GetColor()))
             {
-                board.RemoveChessman(capturedFigure);
+                MoveToDestination(board, from);
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
             return new MoveResult(from, to, moveStatus.status, GetColor(), moveStatus.captured);
@@ -47,6 +47,11 @@ namespace Chess.Logic.Figures
         public override bool CanAttackField(IBoard board, string to)
         {
             return IsMoveValid(board, to);
+        }
+
+        public override IEnumerable<Move> GetPossibleMoves()
+        {
+            throw new NotImplementedException();
         }
 
         private bool IsMoveValid(IBoard board, string to)

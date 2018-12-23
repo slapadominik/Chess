@@ -10,7 +10,7 @@ namespace Chess.Logic
     public abstract class Chessman
     {
         private readonly Color _color;
-        protected string CurrentLocation { get; set; }
+        public string CurrentLocation { get; set; }
 
         protected static readonly Dictionary<string, int> LocationToNumberMapper = new Dictionary<string, int>
         {
@@ -48,10 +48,7 @@ namespace Chess.Logic
 
         public abstract bool CanAttackField(IBoard board, string to);
 
-        public bool IsFriendlyKingInCheck(IBoard board, Color color)
-        {
-            return board.IsFieldAttacked(board.GetChessman<King>(color).CurrentLocation, color);
-        }
+        public abstract IEnumerable<Move> GetPossibleMoves();
 
         protected (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
         {

@@ -32,24 +32,17 @@ namespace Chess.Logic.Figures
             {
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
-
-            var capturedFigure = board.GetChessman(to);
             var from = CurrentLocation;
             var moveType = RecognizeMoveType(board, to);
-
             MoveToDestination(board, to);
 
-            if (IsFriendlyKingInCheck(board, GetColor()))
+            if (board.IsKingInCheck(GetColor()))
             {
                 MoveToDestination(board, from);
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
             IsFirstMove = false;
-            if (moveType.status == MoveStatus.Capture)
-            {
-                board.RemoveChessman(capturedFigure);
-            }
 
             return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
         }
@@ -72,6 +65,11 @@ namespace Chess.Logic.Figures
             }
 
             return false;
+        }
+
+        public override IEnumerable<Move> GetPossibleMoves()
+        {
+            throw new NotImplementedException();
         }
 
         private bool IsMoveValid(IBoard board, string to)

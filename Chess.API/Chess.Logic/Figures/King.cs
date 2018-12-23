@@ -38,6 +38,11 @@ namespace Chess.Logic.Figures
             return true;
         }
 
+        public override IEnumerable<Move> GetPossibleMoves()
+        {
+            throw new System.NotImplementedException();
+        }
+
         private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
         {
             if (!CanAttackField(board, to))

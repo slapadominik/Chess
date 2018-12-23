@@ -81,7 +81,14 @@ namespace Chess.Logic
                     $"Game {_id}: Player {_currentPlayer.Color} can't move Chessman {figure.GetColor()}");
             }
 
+            var figureInDestination = _board.GetChessman(to);
+
             var moveResult = figure.Move(_board, to);
+
+            if (moveResult.MoveStatus == MoveStatus.Capture)
+            {
+                _board.RemoveChessman(figureInDestination);
+            }
             _moves++;
             _currentPlayer = SetCurrentPlayer();
             return moveResult;
@@ -95,6 +102,31 @@ namespace Chess.Logic
         private bool IsCurrentPlayer(Guid id)
         {
             return _currentPlayer.Id == id;
+        }
+
+        private bool IsGameOver()
+        {
+            var opponent = _currentPlayer.Color == Color.White ? _playerBlack : _playerWhite;
+            if (!_board.IsKingInCheck(opponent.Color))
+            {
+                return false;
+            }
+
+            var figures = _board.GetPlayerFigures(opponent.Color);
+            foreach (var figure in figures)
+            {                
+                foreach (var move in figure.GetPossibleMoves())
+                {
+                    figure.Move(_board, move.To);
+                    if (_board.IsKingInCheck(figure.GetColor()))
+                    {
+                        return true;
+
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

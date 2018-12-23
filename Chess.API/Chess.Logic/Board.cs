@@ -26,6 +26,7 @@ namespace Chess.Logic
                 {Locations.A2, new Pawn(Color.White, Locations.A2)}, {Locations.B2, new Pawn(Color.White, Locations.B2)}, {Locations.C2, new Pawn(Color.White, Locations.C2)}, {Locations.D2, new Pawn(Color.White, Locations.D2)}, {Locations.E2, new Pawn(Color.White, Locations.E2)}, {Locations.F2, new Pawn(Color.White, Locations.F2)}, {Locations.G2, new Pawn(Color.White, Locations.G2)}, {Locations.H2, new Pawn(Color.White, Locations.H2)},
                 {Locations.A1, new Rook(Color.White, Locations.A1)}, {Locations.B1, new Knight(Color.White, Locations.B1)}, {Locations.C1, new Bishop(Color.White, Locations.C1)}, {Locations.D1, new Queen(Color.White, Locations.D1)}, {Locations.E1, new King(Color.White, Locations.E1)}, {Locations.F1, new Bishop(Color.White, Locations.F1)}, {Locations.G1, new Knight(Color.White, Locations.G1)}, {Locations.H1, new Rook(Color.White, Locations.H1)}
             };
+
             _blackFigures = _board.Values.Where(x => x !=null && x.GetColor() == Color.Black).ToList();
             _whiteFigures = _board.Values.Where(x => x != null && x.GetColor() == Color.White).ToList();
         }
@@ -36,11 +37,16 @@ namespace Chess.Logic
             return _board.ContainsKey(location) ? _board[location] : throw new InvalidFieldException();
         }
 
-        public Chessman GetChessman<T>(Color color) where T : Chessman
+        public T GetChessman<T>(Color color) where T : Chessman
         {
             return color == Color.White
-                ? _whiteFigures.Single(x => x.GetType() == typeof(T))
-                : _blackFigures.Single(x => x.GetType() == typeof(T));
+                ? _whiteFigures.Single(x => x.GetType() == typeof(T)) as T
+                : _blackFigures.Single(x => x.GetType() == typeof(T)) as T;
+        }
+
+        public bool IsKingInCheck(Color color)
+        {
+            return IsFieldAttacked(GetChessman<King>(color).CurrentLocation, color);
         }
 
         public void RemoveChessman(Chessman chessman)
@@ -50,6 +56,11 @@ namespace Chess.Logic
             {
                 throw new RemoveChessmanException($"{chessman.GetColor()} {typeof(Chessman)} not found on the board");
             }
+        }
+
+        public IEnumerable<Chessman> GetPlayerFigures(Color color)
+        {
+            return color == Color.White ? _whiteFigures : _blackFigures;
         }
 
         public Type GetChessmanType(string location)
