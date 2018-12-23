@@ -10,16 +10,14 @@ namespace Chess.Logic.Figures
     public class Pawn : Chessman
     {
         public bool IsFirstMove { get; set; }
-        private readonly int[] _validNormalMoves;
-        private readonly int[] _validFirstMoves;
-        private readonly int[] _validCaptureMoves;
+        private const int FIRST_MOVE_DIFFERENCE = 16;
+        private const int NORMAL_MOVE_DIFFERENCE = 8;
+        private const int CAPTURE1_MOVE_DIFFERENCE = 9;
+        private const int CAPTURE2_MOVE_DIFFERENCE = 7;
 
         public Pawn(Color color, string currentLocation) : base(color, currentLocation)
         {
             IsFirstMove = true;
-            _validNormalMoves = new int[] {8, -8};
-            _validFirstMoves = new int[]{16, -16};
-            _validCaptureMoves = new int[] {9, -9, 7, -7};
         }
 
         public override MoveResult Move(IBoard board, string to)
@@ -29,92 +27,97 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
 
-            if (board.GetChessman(to) == null)
-            {
-                return MakeNonCaptureMove(board, CurrentLocation, to);
-            }
-
-            return MakeCaptureMove(board, CurrentLocation, to);
-        }
-
-        public override bool CanAttackField(IBoard board, string to)
-        {
-            return IsMoveValid(to, FilterValidMoves(_validCaptureMoves, GetColor()));
-        }
-
-        private bool IsMoveValid(string to, IEnumerable<int> validMoves)
-        {
-            if (LocationToNumberMapper.ContainsKey(to))
-            {
-                var valueFrom = LocationToNumberMapper[CurrentLocation];
-                var valueTo = LocationToNumberMapper[to];
-                foreach (var validMove in validMoves)
-                {
-                    if (valueTo - valueFrom == validMove)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
-        {            
-            if (IsFirstMove)
-            {
-                if (!IsMoveValid(to, FilterValidMoves(_validNormalMoves.Concat(_validFirstMoves), GetColor())))
-                {
-                    throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-                }
-            }
-            else
-            {
-                if (!IsMoveValid(to, FilterValidMoves(_validNormalMoves, GetColor())))
-                {
-                    throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-                }
-            }
-            
-            MoveToDestination(board, to);
-            if (IsFriendlyKingInCheck(board, GetColor()))
-            {
-                MoveToDestination(board, from);
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
-            }
-            IsFirstMove = false;
-            return new MoveResult(from, to, MoveStatus.Normal, GetColor());
-        }
-
-        private MoveResult MakeCaptureMove(IBoard board, string from, string to)
-        {
             //TODO: implementacja przypadku promocji pionka
-            if (!CanAttackField(board, to))
+            if (!IsMoveValid(board, to))
             {
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
 
-            var opponentFigure = board.GetChessman(to);
+            var capturedFigure = board.GetChessman(to);
+            var from = CurrentLocation;
+            var moveType = RecognizeMoveType(board, to);
+
             MoveToDestination(board, to);
+
             if (IsFriendlyKingInCheck(board, GetColor()))
             {
                 MoveToDestination(board, from);
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-            board.RemoveChessman(opponentFigure);
             IsFirstMove = false;
-            return new MoveResult(from, to, MoveStatus.Capture, GetColor());
-        }
-
-        private IEnumerable<int> FilterValidMoves(IEnumerable<int> moves, Color color)
-        {
-            if (color == Color.Black)
+            if (moveType.status == MoveStatus.Capture)
             {
-                return moves.Where(x => x > 0);
+                board.RemoveChessman(capturedFigure);
             }
 
-            return moves.Where(x => x < 0);
+            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
+        }
+
+        public override bool CanAttackField(IBoard board, string to)
+        {
+            if (LocationToNumberMapper.ContainsKey(to))
+            {
+                var locationDifference = LocationToNumberMapper[CurrentLocation] - LocationToNumberMapper[to];
+
+                switch (Math.Abs(locationDifference))
+                {
+                    case CAPTURE1_MOVE_DIFFERENCE:
+                    case CAPTURE2_MOVE_DIFFERENCE:
+                        return GetColor() == Color.White ? locationDifference < 0 : locationDifference > 0;
+
+                    default:
+                        return false;
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsMoveValid(IBoard board, string to)
+        {
+            if (LocationToNumberMapper.ContainsKey(to))
+            {
+                var locationDifference = LocationToNumberMapper[to]-LocationToNumberMapper[CurrentLocation];
+
+                switch (Math.Abs(locationDifference))
+                {
+                    case NORMAL_MOVE_DIFFERENCE:
+                        if (board.GetChessman(to) != null)
+                        {
+                            return false;
+                        }
+                        return GetColor() == Color.White ? locationDifference < 0 : locationDifference > 0;
+                    case CAPTURE1_MOVE_DIFFERENCE:
+                    case CAPTURE2_MOVE_DIFFERENCE:
+                        if (board.GetChessman(to) == null)
+                        {
+                            return false;
+                        }
+                        return board.GetChessman(to).GetColor() != GetColor() && GetColor() == Color.White ? locationDifference < 0 : locationDifference > 0;
+
+                    case FIRST_MOVE_DIFFERENCE:
+                        if (!IsFirstMove)
+                        {
+                            return false;
+                        }
+                        return GetColor() == Color.White ? locationDifference < 0 : locationDifference > 0  && IsPrecedingFieldEmpty(board, GetColor());
+
+                    default:
+                        return false;
+                }
+            }
+
+            return false;            
+        }        
+
+        private bool IsPrecedingFieldEmpty(IBoard board, Color color)
+        {
+            var currentPositionNumber = LocationToNumberMapper[CurrentLocation];
+            return board.GetChessman(NumberToLocationMapper[
+                color == Color.White
+                    ? currentPositionNumber - FIRST_MOVE_DIFFERENCE
+                    : currentPositionNumber + FIRST_MOVE_DIFFERENCE]) == null;
         }
 
         public override bool Equals(object obj)
