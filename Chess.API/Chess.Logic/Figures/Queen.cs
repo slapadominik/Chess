@@ -26,6 +26,8 @@ namespace Chess.Logic.Figures
             {
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
+
+            var capturedFigure = board.GetChessman(to);
             var from = CurrentLocation;
             var moveType = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
@@ -34,6 +36,11 @@ namespace Chess.Logic.Figures
             {
                 MoveToDestination(board, from);
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+            }
+
+            if (moveType.status == MoveStatus.Capture)
+            {
+                board.RemoveChessman(capturedFigure);
             }
 
             return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);

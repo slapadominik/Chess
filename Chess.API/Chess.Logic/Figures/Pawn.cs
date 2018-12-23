@@ -93,6 +93,8 @@ namespace Chess.Logic.Figures
             {
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
+
+            var opponentFigure = board.GetChessman(to);
             MoveToDestination(board, to);
             if (IsFriendlyKingInCheck(board, GetColor()))
             {
@@ -100,6 +102,7 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
+            board.RemoveChessman(opponentFigure);
             IsFirstMove = false;
             return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }

@@ -30,9 +30,15 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
             }
 
+            var capturedFigure = board.GetChessman(to);
             var from = CurrentLocation;
             var moveStatus = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
+
+            if (moveStatus.status == MoveStatus.Capture)
+            {
+                board.RemoveChessman(capturedFigure);
+            }
 
             return new MoveResult(from, to, moveStatus.status, GetColor(), moveStatus.captured);
         }
