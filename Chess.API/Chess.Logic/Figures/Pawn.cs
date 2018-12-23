@@ -58,7 +58,7 @@ namespace Chess.Logic.Figures
         {
             if (LocationToNumberMapper.ContainsKey(to))
             {
-                var locationDifference = LocationToNumberMapper[CurrentLocation] - LocationToNumberMapper[to];
+                var locationDifference = LocationToNumberMapper[to]-LocationToNumberMapper[CurrentLocation];
 
                 switch (Math.Abs(locationDifference))
                 {
