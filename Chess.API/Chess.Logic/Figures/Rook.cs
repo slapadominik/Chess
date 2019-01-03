@@ -49,7 +49,7 @@ namespace Chess.Logic.Figures
             return IsMoveValid(board, to);
         }
 
-        public override IEnumerable<Move> GetPossibleMoves()
+        public override IEnumerable<Move> GetPossibleMoves(IBoard board)
         {
             throw new NotImplementedException();
         }

@@ -49,9 +49,20 @@ namespace Chess.Logic.Figures
             return IsDiagonalMove(to) && IsDiagonalMoveLegal(board, to);
         }
 
-        public override IEnumerable<Move> GetPossibleMoves()
+        public override IEnumerable<Move> GetPossibleMoves(IBoard board)
         {
-            throw new NotImplementedException();
+            var possibleMoves = new List<Move>();
+            var leftCorner = GetLastUpLeftDiagonalLocation(CurrentLocation);
+
+            CanAttackField(board, leftCorner);
+            var from = CurrentLocation;
+
+            while (CanAttackField(board, from))
+            {
+                
+            }
+
+            return possibleMoves;
         }
 
         private bool IsMoveValid(IBoard board, string to)
@@ -91,6 +102,89 @@ namespace Chess.Logic.Figures
             return true;
         }
 
+        private string GetLastUpLeftDiagonalLocation(string from)
+        {
+            var columnFrom = CharToColumnNumberMapper[from[0]];
+            var rowFrom = (int)Char.GetNumericValue(from[1]);
+            if (columnFrom == 1 || rowFrom == 8)
+            {
+                return from;
+            }
+
+            int fields;
+            if (columnFrom >= 4)
+            {
+                fields = 8 - rowFrom;
+                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
+            }
+
+            fields = Math.Abs(1 - columnFrom);
+            columnFrom += fields;
+            return "a" + columnFrom;
+        }
+
+        private string GetLastUpRightDiagonalLocation(string from)
+        {
+            var columnFrom = CharToColumnNumberMapper[from[0]];
+            var rowFrom = (int)Char.GetNumericValue(from[1]);
+            if (columnFrom == 1 || rowFrom == 8)
+            {
+                return from;
+            }
+
+            int fields;
+            if (columnFrom >= 4)
+            {
+                fields = 8 - rowFrom;
+                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
+            }
+
+            fields = Math.Abs(1 - columnFrom);
+            columnFrom += fields;
+            return "a" + columnFrom;
+        }
+
+        private string GetLastDownLeftDiagonalLocation(string from)
+        {
+            var columnFrom = CharToColumnNumberMapper[from[0]];
+            var rowFrom = (int)Char.GetNumericValue(from[1]);
+            if (columnFrom == 1 || rowFrom == 8)
+            {
+                return from;
+            }
+
+            int fields;
+            if (columnFrom >= 4)
+            {
+                fields = 8 - rowFrom;
+                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
+            }
+
+            fields = Math.Abs(1 - columnFrom);
+            columnFrom += fields;
+            return "a" + columnFrom;
+        }
+
+        private string GetLastDownRightDiagonalLocation(string from)
+        {
+            var columnFrom = CharToColumnNumberMapper[from[0]];
+            var rowFrom = (int)Char.GetNumericValue(from[1]);
+            if (columnFrom == 1 || rowFrom == 8)
+            {
+                return from;
+            }
+
+            int fields;
+            if (columnFrom >= 4)
+            {
+                fields = 8 - rowFrom;
+                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
+            }
+
+            fields = Math.Abs(1 - columnFrom);
+            columnFrom += fields;
+            return "a" + columnFrom;
+        }
 
         public override bool Equals(object obj)
         {

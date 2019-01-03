@@ -115,7 +115,7 @@ namespace Chess.Logic
             var figures = _board.GetPlayerFigures(opponent.Color);
             foreach (var figure in figures)
             {                
-                foreach (var move in figure.GetPossibleMoves())
+                foreach (var move in figure.GetPossibleMoves(_board))
                 {
                     figure.Move(_board, move.To);
                     if (_board.IsKingInCheck(figure.GetColor()))

@@ -48,7 +48,7 @@ namespace Chess.Logic
 
         public abstract bool CanAttackField(IBoard board, string to);
 
-        public abstract IEnumerable<Move> GetPossibleMoves();
+        public abstract IEnumerable<Move> GetPossibleMoves(IBoard board);
 
         protected (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
         {
