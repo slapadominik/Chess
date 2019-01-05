@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
@@ -82,6 +83,54 @@ namespace Chess.Logic.Tests.Figures
             //result.MoveStatus.Should().Be(MoveStatus.Capture);
             //result.Board.GetChessman(from).Should().Be(null);
             //.Board.GetChessman(to).Should().Be(_sut);
+        }
+
+        [TestCase(Color.White, "a2", true, 2)]
+        [TestCase(Color.White, "d2", false, 1)]
+        [TestCase(Color.Black, "b7", true, 2)]
+        [TestCase(Color.Black, "h7", false, 1)]
+        public void GetPossibleMoves_WhenNoneFigureToCapture_ReturnsListOfPossibleMoves(Color color, string currentLocation, bool isFirstMove, int expectedValidMoves)
+        {   
+            //Arrange
+            _sut = InitializePawn(color, currentLocation, isFirstMove);
+
+            //Act
+            var result = _sut.GetPossibleMoves(_board);
+
+            //Assert
+            result.Should().NotBeEmpty();
+            result.Count().Should().Be(expectedValidMoves);
+        }
+
+        [TestCase(Color.White, "a2", true, "b3", 3)]
+        [TestCase(Color.White, "a2", false, "b3", 2)]
+        public void GetPossibleMoves_WhenThereIsFigureToCapture_ReturnsListOfPossibleMoves(Color color, string currentLocation, bool isFirstMove, string opponentFigureLocation, int expectedValidMoves)
+        {
+            //Arrange
+            _sut = InitializePawn(color, currentLocation, isFirstMove);
+            InitializeOpponentToCapture(color == Color.White ? Color.Black : Color.White,
+                opponentFigureLocation);
+
+            //Act
+            var result = _sut.GetPossibleMoves(_board);
+
+            //Assert
+            result.Should().NotBeEmpty();
+            result.Count().Should().Be(expectedValidMoves);
+        }
+
+        private Pawn InitializePawn(Color color, string currentLocation, bool isFirstMove)
+        {
+            Pawn pawn = new Pawn(color, currentLocation);
+            pawn.IsFirstMove = isFirstMove;
+            _board.SetChessman(currentLocation, pawn);
+            return pawn;
+        }
+
+        private void InitializeOpponentToCapture(Color color, string opponentLocation)
+        {
+            Queen queen = new Queen(color, opponentLocation);
+            _board.SetChessman(opponentLocation, queen);
         }
     }
 }

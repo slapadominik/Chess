@@ -44,7 +44,6 @@ namespace Chess.Logic.Figures
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-
             return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.GetType().Name);
         }
 

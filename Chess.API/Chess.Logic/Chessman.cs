@@ -73,5 +73,10 @@ namespace Chess.Logic
             board.SetChessman(CurrentLocation, null);
             CurrentLocation = to;          
         }
+
+        protected bool LocationNumberExists(int locationNumber)
+        {
+            return NumberToLocationMapper.ContainsKey(locationNumber);
+        }
     }
 }
