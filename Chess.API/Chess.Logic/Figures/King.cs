@@ -17,16 +17,41 @@ namespace Chess.Logic.Figures
 
         public override MoveResult Move(IBoard board, string to)
         {
-            if (board.GetChessman(to) == null)
+            if (board.GetChessman(to)?.GetColor() == GetColor())
             {
-                return MakeNonCaptureMove(board, CurrentLocation, to);
+                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
             }
-            //if (IsInCheck() && validMoves.Count=0) = GameOver
-            return MakeCaptureMove(board, CurrentLocation, to);
+
+            if (!CanAttackField(board, to))
+            {
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+            }
+
+            var from = CurrentLocation;
+            var moveType = RecognizeMoveType(board, to);
+            MoveToDestination(board, to);
+
+            if (board.IsFieldAttacked(to, GetColor()))
+            {
+                MoveToDestination(board, from);
+                if (moveType.status == MoveStatus.Capture)
+                {
+                    board.SetChessman(to, moveType.captured);
+                    board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
+                }
+                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - field is attacked");
+            }
+
+            return new MoveResult(from, to, MoveStatus.Capture, GetColor(), moveType.captured?.ToString());
+        }
+
+        public override IEnumerable<Move> GetPossibleMoves(IBoard board)
+        {
+            throw new System.NotImplementedException();
         }
 
         public override bool CanAttackField(IBoard board, string to)
-        {          
+        {
             if (board.GetChessman(to)?.GetColor() == GetColor())
             {
                 return false;
@@ -38,50 +63,6 @@ namespace Chess.Logic.Figures
             }
 
             return true;
-        }
-
-        public override IEnumerable<Move> GetPossibleMoves(IBoard board)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private MoveResult MakeNonCaptureMove(IBoard board, string from, string to)
-        {
-            if (!CanAttackField(board, to))
-            {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-            }
-
-            if (board.IsFieldAttacked(to, GetColor()))
-            {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - field is attacked");
-            }
-
-            MoveToDestination(board, to);
-            return new MoveResult(from, to, MoveStatus.Normal, GetColor());
-        }
-
-        private MoveResult MakeCaptureMove(IBoard board, string from, string to)
-        {
-            if (board.GetChessman(to).GetColor() == GetColor())
-            {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
-            }
-
-            if (!CanAttackField(board, to))
-            {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
-            }
-
-            if (board.IsFieldAttacked(to, GetColor()))
-            {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - field is attacked");
-            }
-
-            CaptureChessman(board, to);
-            MoveToDestination(board, to);
-
-            return new MoveResult(from, to, MoveStatus.Capture, GetColor());
         }
 
         private bool CanMakeMoveToDestination(string field)

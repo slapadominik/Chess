@@ -35,10 +35,15 @@ namespace Chess.Logic.Figures
             if (board.IsKingInCheck(GetColor()))
             {
                 MoveToDestination(board, from);
+                if (moveType.status == MoveStatus.Capture)
+                {
+                    board.SetChessman(to, moveType.captured);
+                    board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
+                }
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured);
+            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.GetType().Name);
         }
 
         public override bool CanAttackField(IBoard board, string to)

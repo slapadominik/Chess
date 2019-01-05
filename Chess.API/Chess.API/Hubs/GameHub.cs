@@ -101,7 +101,7 @@ namespace Chess.API.Hubs
             try
             {
                 _gameService.StartGame(gameId, userId);
-                await Clients.All.SendAsync("StartGame_Result", gameId);
+                await Clients.All.SendAsync("StartGame_Result");
             }
             catch (Exception ex)
             {

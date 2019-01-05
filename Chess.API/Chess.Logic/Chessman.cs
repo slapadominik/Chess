@@ -51,11 +51,11 @@ namespace Chess.Logic
 
         public abstract IEnumerable<Move> GetPossibleMoves(IBoard board);
 
-        protected (MoveStatus status, string captured) RecognizeMoveType(IBoard board, string to)
+        protected (MoveStatus status, Chessman captured) RecognizeMoveType(IBoard board, string to)
         {
             if (board.GetChessman(to) != null)
             {
-                return (MoveStatus.Capture, board.GetChessmanType(to).Name);
+                return (MoveStatus.Capture, board.GetChessman(to));
             }
 
             return (MoveStatus.Normal, null);
@@ -63,17 +63,15 @@ namespace Chess.Logic
 
         protected virtual void MoveToDestination(IBoard board, string to)
         {
+            var captured = board.GetChessman(to);
+            if (captured != null)
+            {
+                board.GetPlayerFigures(captured.GetColor()).Remove(captured);
+            }
+
             board.SetChessman(to, this);
             board.SetChessman(CurrentLocation, null);
-            CurrentLocation = to;
-        }
-
-        protected void CaptureChessman(IBoard board, string to)
-        {
-            if (board.GetChessman(to) != null)
-            {
-                board.RemoveChessman(board.GetChessman(to));
-            }
+            CurrentLocation = to;          
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Chess.Logic.Interfaces
         T GetChessman<T>(Color color) where T : Chessman;
         bool IsKingInCheck(Color color);
         void RemoveChessman(Chessman chessman);
-        IEnumerable<Chessman> GetPlayerFigures(Color color);
+        IList<Chessman> GetPlayerFigures(Color color);
         BoardSquare[] GetState();
     }
 }

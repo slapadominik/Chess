@@ -33,16 +33,21 @@ namespace Chess.Logic.Figures
             }
 
             var from = CurrentLocation;
-            var moveStatus = RecognizeMoveType(board, to);
+            var moveType = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
 
             if (board.IsKingInCheck(GetColor()))
             {
                 MoveToDestination(board, from);
+                if (moveType.status == MoveStatus.Capture)
+                {
+                    board.SetChessman(to, moveType.captured);
+                    board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
+                }
                 throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-            return new MoveResult(from, to, moveStatus.status, GetColor(), moveStatus.captured);
+            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.GetType().Name);
         }
 
 

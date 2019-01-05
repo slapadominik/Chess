@@ -71,7 +71,7 @@ namespace Chess.Logic
             }
         }
 
-        public IEnumerable<Chessman> GetPlayerFigures(Color color)
+        public IList<Chessman> GetPlayerFigures(Color color)
         {
             return color == Color.White ? _whiteFigures : _blackFigures;
         }
