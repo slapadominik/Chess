@@ -1,5 +1,6 @@
 ﻿using System;
 using Chess.Logic;
+using Chess.Logic.Consts;
 
 
 namespace Chess.API.DTO.Input

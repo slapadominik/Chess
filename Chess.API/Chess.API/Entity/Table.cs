@@ -1,6 +1,7 @@
 ﻿using System;
 using Chess.API.Entity.Interfaces;
 using Chess.Logic;
+using Chess.Logic.Consts;
 using Chess.Logic.Interfaces;
 
 namespace Chess.API.Entity

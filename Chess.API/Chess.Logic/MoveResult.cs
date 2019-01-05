@@ -1,4 +1,5 @@
 ﻿using System;
+using Chess.Logic.Consts;
 using Chess.Logic.Interfaces;
 
 namespace Chess.Logic

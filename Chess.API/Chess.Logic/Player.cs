@@ -1,4 +1,5 @@
 ﻿using System;
+using Chess.Logic.Consts;
 
 namespace Chess.Logic
 {

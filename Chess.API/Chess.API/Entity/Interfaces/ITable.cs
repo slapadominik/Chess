@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Chess.Logic;
+using Chess.Logic.Consts;
 using Chess.Logic.Interfaces;
 
 namespace Chess.API.Entity.Interfaces

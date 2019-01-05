@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
 using Chess.Logic.Interfaces;
@@ -9,6 +11,8 @@ namespace Chess.Logic
     public class Board : IBoard
     {
         private readonly IDictionary<string, Chessman> _board;
+        private readonly List<Chessman> _blackFigures;
+        private readonly List<Chessman> _whiteFigures;
 
         public Board()
         {
@@ -23,12 +27,53 @@ namespace Chess.Logic
                 {Locations.A2, new Pawn(Color.White, Locations.A2)}, {Locations.B2, new Pawn(Color.White, Locations.B2)}, {Locations.C2, new Pawn(Color.White, Locations.C2)}, {Locations.D2, new Pawn(Color.White, Locations.D2)}, {Locations.E2, new Pawn(Color.White, Locations.E2)}, {Locations.F2, new Pawn(Color.White, Locations.F2)}, {Locations.G2, new Pawn(Color.White, Locations.G2)}, {Locations.H2, new Pawn(Color.White, Locations.H2)},
                 {Locations.A1, new Rook(Color.White, Locations.A1)}, {Locations.B1, new Knight(Color.White, Locations.B1)}, {Locations.C1, new Bishop(Color.White, Locations.C1)}, {Locations.D1, new Queen(Color.White, Locations.D1)}, {Locations.E1, new King(Color.White, Locations.E1)}, {Locations.F1, new Bishop(Color.White, Locations.F1)}, {Locations.G1, new Knight(Color.White, Locations.G1)}, {Locations.H1, new Rook(Color.White, Locations.H1)}
             };
+
+            _blackFigures = _board.Values.Where(x => x !=null && x.GetColor() == Color.Black).ToList();
+            _whiteFigures = _board.Values.Where(x => x != null && x.GetColor() == Color.White).ToList();
         }
 
+        public BoardSquare[] GetState()
+        {
+            BoardSquare[] state = new BoardSquare[64];
+            int counter = 0;
+            foreach (var location in _board.Keys)
+            {
+                //row[counter++] = _board[location] != null ? _board[location].ToString() : null;
+                state[counter++] = new BoardSquare(location, _board[location] != null ? _board[location].ToString() : null);                       
+            }
+
+            return state;
+        }
 
         public Chessman GetChessman(string location)
         {
             return _board.ContainsKey(location) ? _board[location] : throw new InvalidFieldException();
+        }
+
+        public T GetChessman<T>(Color color) where T : Chessman
+        {
+            return color == Color.White
+                ? _whiteFigures.Single(x => x.GetType() == typeof(T)) as T
+                : _blackFigures.Single(x => x.GetType() == typeof(T)) as T;
+        }
+
+        public bool IsKingInCheck(Color color)
+        {
+            return IsFieldAttacked(GetChessman<King>(color).CurrentLocation, color);
+        }
+
+        public void RemoveChessman(Chessman chessman)
+        {
+            var figures = chessman.GetColor() == Color.White ? _whiteFigures : _blackFigures;
+            if (!figures.Remove(chessman))
+            {
+                throw new RemoveChessmanException($"{chessman.GetColor()} {typeof(Chessman)} not found on the board");
+            }
+        }
+
+        public IEnumerable<Chessman> GetPlayerFigures(Color color)
+        {
+            return color == Color.White ? _whiteFigures : _blackFigures;
         }
 
         public Type GetChessmanType(string location)
@@ -49,6 +94,17 @@ namespace Chess.Logic
         public bool FieldExists(string field)
         {
             return _board.ContainsKey(field);
+        }
+
+        public bool IsFieldAttacked(string field, Color figureColor)
+        {
+            if (_board.ContainsKey(field))
+            {
+                var opponentFigures = figureColor == Color.White ? _blackFigures : _whiteFigures;
+                return opponentFigures.Count(x => x.CanAttackField(this, field)) > 0;
+            }
+
+            throw new InvalidFieldException();
         }
     }
 }

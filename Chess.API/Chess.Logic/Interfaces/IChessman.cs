@@ -1,4 +1,6 @@
-﻿namespace Chess.Logic.Interfaces
+﻿using Chess.Logic.Consts;
+
+namespace Chess.Logic.Interfaces
 {
     public interface IChessman
     {

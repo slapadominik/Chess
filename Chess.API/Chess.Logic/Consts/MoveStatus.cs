@@ -5,7 +5,5 @@
         Normal = 1,
         Capture = 2,
         PawnPromotion = 3,
-        Check = 4,
-        Checkmate = 5
     }
 }

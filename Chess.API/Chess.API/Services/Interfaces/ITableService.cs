@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Chess.API.DTO.Output;
 using Chess.API.Entity.Interfaces;
 using Chess.Logic;
+using Chess.Logic.Consts;
 using Chess.Logic.Interfaces;
 
 namespace Chess.API.Services.Interfaces
