@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Chess.API.DTO.Input;
+using Chess.API.DTO.Output;
 using Chess.API.Entity;
 using Chess.API.Exceptions;
 using Chess.API.Hubs;
@@ -24,13 +25,13 @@ namespace Chess.API.Controllers
             _tableService = tableService;
         }
 
-        [HttpPost("getTableInfo")]
-        public async Task<IActionResult> GetTableInfo([FromBody] TableInfoRequest tableInfoRequest)
+        [HttpGet("{tableNumber}")]
+        public ActionResult<TableState> GetTableInfo(int tableNumber)
         {
             try
             {
-                var tableState = _tableService.GetTableState(tableInfoRequest.TableNumber);
-                _logger.LogInformation($"Successfully retrieved table state for table [{tableInfoRequest.TableNumber}]");
+                var tableState = _tableService.GetTableState(tableNumber);
+                _logger.LogInformation($"Successfully retrieved table state for table [{tableNumber}]");
                 return Ok(tableState);
             }
             catch (Exception ex)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
@@ -202,5 +203,18 @@ namespace Chess.Logic.Figures
             return false;
         }
 
+        public override string ToString()
+        {
+            switch (GetColor())
+            {
+                case Color.White:
+                    return "w" + Figure.Bishop;
+                case Color.Black:
+                    return "b" + Figure.Bishop;
+                default:
+                    throw new InvalidEnumArgumentException();
+            }
+           
+        }
     }
 }

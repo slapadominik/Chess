@@ -109,6 +109,7 @@ namespace Chess.API.Hubs
             }    
         }
 
+
         public async Task MakeMove(Guid gameId, Guid playerId, string from, string to)
         {
             try

@@ -9,5 +9,6 @@ namespace Chess.Logic.Interfaces
         int MovesCount();
         void StartGame(Guid userId);
         bool IsGameStarted();
+        BoardSquare[] GetBoardState();
     }
 }

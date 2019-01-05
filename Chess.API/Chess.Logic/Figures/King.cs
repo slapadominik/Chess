@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Interfaces;
@@ -113,6 +114,19 @@ namespace Chess.Logic.Figures
             }
 
             return false;
+        }
+
+        public override string ToString()
+        {
+            switch (GetColor())
+            {
+                case Color.White:
+                    return "w" + Figure.King;
+                case Color.Black:
+                    return "b" + Figure.King;
+                default:
+                    throw new InvalidEnumArgumentException();
+            }
         }
     }
 }

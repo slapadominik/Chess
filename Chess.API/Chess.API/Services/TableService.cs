@@ -9,7 +9,6 @@ using Chess.API.Helpers;
 using Chess.API.Services.Interfaces;
 using Chess.Logic;
 using Chess.Logic.Consts;
-using Chess.Logic.Interfaces;
 
 namespace Chess.API.Services
 {
@@ -64,38 +63,31 @@ namespace Chess.API.Services
             var table = Get(tableNumber);
             if (table == null)
             {
-                throw new TableNotExistException($"{nameof(GetTableState)} Table [{tableNumber}] does not exist!");
+                throw new TableNotExistException($"Table [{tableNumber}] does not exist!");
             }
 
             Guid? gameId = null;
             bool gameStarted = false;
+            BoardSquare[] boardState = null;
+            User playerWhite = null;
+            User playerBlack = null;
 
             if (table.Game != null)
             {
                 gameId = table.Game.GetId();
                 gameStarted = table.Game.IsGameStarted();
-            }
-
-            User playerWhite = null;
-            User playerBlack = null;
-            try
-            {
+                boardState = table.Game.GetBoardState();
+                playerWhite = _userService.GetUserById(table.PlayerWhiteId);
                 playerBlack = _userService.GetUserById(table.PlayerBlackId);
             }
-            catch (UserNotFoundException ex){}
-
-            try
-            {
-                playerWhite = _userService.GetUserById(table.PlayerWhiteId);
-            }
-            catch(UserNotFoundException ex) { }
 
             return new TableState
             {
                 GameId = gameId,
                 PlayerWhiteUsername = playerWhite?.Username,
                 PlayerBlackUsername = playerBlack?.Username,
-                GameStarted = gameStarted
+                GameStarted = gameStarted,
+                BoardState = boardState
             };
         }
     }

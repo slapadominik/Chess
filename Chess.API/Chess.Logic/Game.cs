@@ -53,6 +53,11 @@ namespace Chess.Logic
             return _gameStarted;
         }
 
+        public BoardSquare[] GetBoardState()
+        {
+            return _board.GetState();
+        }
+
         public Guid GetId()
         {
             return _id;

@@ -32,6 +32,18 @@ namespace Chess.Logic
             _whiteFigures = _board.Values.Where(x => x != null && x.GetColor() == Color.White).ToList();
         }
 
+        public BoardSquare[] GetState()
+        {
+            BoardSquare[] state = new BoardSquare[64];
+            int counter = 0;
+            foreach (var location in _board.Keys)
+            {
+                //row[counter++] = _board[location] != null ? _board[location].ToString() : null;
+                state[counter++] = new BoardSquare(location, _board[location] != null ? _board[location].ToString() : null);                       
+            }
+
+            return state;
+        }
 
         public Chessman GetChessman(string location)
         {
