@@ -72,7 +72,6 @@ namespace Chess.API
             app.UseHttpsRedirection();
             app.UseSignalR(routes =>
             {
-                routes.MapHub<ValuesHub>("/Hubs/Values");
                 routes.MapHub<TableHub>("/Hubs/Tables");
                 routes.MapHub<GameHub>("/Hubs/Games");
             });
