@@ -8,6 +8,7 @@ using Chess.API.Exceptions;
 using Chess.API.Helpers;
 using Chess.API.Services.Interfaces;
 using Chess.Logic;
+using Chess.Logic.Consts;
 using Chess.Logic.Interfaces;
 
 namespace Chess.API.Services

@@ -1,4 +1,4 @@
-namespace Chess.Logic
+namespace Chess.Logic.Consts
 {
     public static class Figure
     {

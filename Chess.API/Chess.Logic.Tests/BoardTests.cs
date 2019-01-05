@@ -1,4 +1,5 @@
-﻿using Chess.Logic.Figures;
+﻿using Chess.Logic.Consts;
+using Chess.Logic.Figures;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;

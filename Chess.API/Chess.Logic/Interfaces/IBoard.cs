@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Chess.Logic.Consts;
 
 namespace Chess.Logic.Interfaces
 {

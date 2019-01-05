@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Figures;
 using Chess.Logic.Interfaces;
