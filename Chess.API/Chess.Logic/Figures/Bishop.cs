@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Interfaces;
@@ -15,17 +16,11 @@ namespace Chess.Logic.Figures
         }
 
         public override MoveResult Move(IBoard board, string to)
-        {
-            if (board.GetChessman(to)?.GetColor() == GetColor())
-            {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
-            }      
-            
+        {               
             if (!IsMoveValid(board, to))
             {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to}");
             }
-
 
             var from = CurrentLocation;
             var moveType = RecognizeMoveType(board, to);      
@@ -39,10 +34,10 @@ namespace Chess.Logic.Figures
                     board.SetChessman(to, moveType.captured);
                     board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
                 }
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.ToString());
+            return new MoveResult(Figure.Bishop, from, to, moveType.status, GetColor(), ConvertFigure(moveType.captured));
         }
 
         public override bool CanAttackField(IBoard board, string to)
@@ -58,14 +53,21 @@ namespace Chess.Logic.Figures
         public override IEnumerable<Move> GetPossibleMoves(IBoard board)
         {
             var possibleMoves = new List<Move>();
-            var leftCorner = GetLastUpLeftDiagonalLocation(CurrentLocation);
+            var leftUpCornerNumber = GetLeftTopCornerNumber(CurrentLocation);
+            var rightUpCornerNumber = GetRightTopCornerNumber(CurrentLocation);
+            var leftDownCornerNumber = GetLeftDownCornerNumber(CurrentLocation);
+            var rightDownCornerNumber = GetRightDownCornerNumber(CurrentLocation);
+            var possibleFields = GetFieldsInDirection(leftUpCornerNumber, -9).
+                Concat(GetFieldsInDirection(rightUpCornerNumber, -7))
+                .Concat(GetFieldsInDirection(leftDownCornerNumber, 7))
+                .Concat(GetFieldsInDirection(rightDownCornerNumber, 9));
 
-            CanAttackField(board, leftCorner);
-            var from = CurrentLocation;
-
-            while (CanAttackField(board, from))
+            foreach (var field in possibleFields)
             {
-                
+                if (IsMoveValid(board, field))
+                {
+                    possibleMoves.Add(new Move(this, CurrentLocation, field));
+                }
             }
 
             return possibleMoves;
@@ -73,6 +75,11 @@ namespace Chess.Logic.Figures
 
         private bool IsMoveValid(IBoard board, string to)
         {
+            if (board.GetChessman(to)?.GetColor() == GetColor())
+            {
+                return false;
+            }
+
             if (typeof(King) == (board.GetChessmanType(to)))
             {
                 return false;
@@ -108,88 +115,86 @@ namespace Chess.Logic.Figures
             return true;
         }
 
-        private string GetLastUpLeftDiagonalLocation(string from)
+        private IEnumerable<string> GetFieldsInDirection(int destinationNumber, int directionIndicator)
         {
-            var columnFrom = CharToColumnNumberMapper[from[0]];
-            var rowFrom = (int)Char.GetNumericValue(from[1]);
-            if (columnFrom == 1 || rowFrom == 8)
+            List<string> possibleFields = new List<string>();
+            var currentLocationNumber = LocationToNumberMapper[CurrentLocation];
+            while (destinationNumber != (currentLocationNumber + directionIndicator))
             {
-                return from;
+                possibleFields.Add(NumberToLocationMapper[currentLocationNumber+directionIndicator]);
+                currentLocationNumber += directionIndicator;
             }
 
-            int fields;
-            if (columnFrom >= 4)
-            {
-                fields = 8 - rowFrom;
-                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
-            }
-
-            fields = Math.Abs(1 - columnFrom);
-            columnFrom += fields;
-            return "a" + columnFrom;
+            return possibleFields;
         }
 
-        private string GetLastUpRightDiagonalLocation(string from)
+        private int GetLeftTopCornerNumber(string from)
         {
             var columnFrom = CharToColumnNumberMapper[from[0]];
             var rowFrom = (int)Char.GetNumericValue(from[1]);
-            if (columnFrom == 1 || rowFrom == 8)
+
+            int fields = 8 - rowFrom;
+            //if bishop is above diagonal line 1 (diagonal from a8-h1)
+            if (rowFrom>columnFrom)
             {
-                return from;
+                return LocationToNumberMapper[ColumnNumberToCharMapper[columnFrom + fields] + "8"];
             }
 
-            int fields;
-            if (columnFrom >= 4)
-            {
-                fields = 8 - rowFrom;
-                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
-            }
-
-            fields = Math.Abs(1 - columnFrom);
-            columnFrom += fields;
-            return "a" + columnFrom;
+            fields = 8 - columnFrom;
+            var rowTo = rowFrom + fields;
+            return LocationToNumberMapper["a" + rowTo];
         }
 
-        private string GetLastDownLeftDiagonalLocation(string from)
+        private int GetRightTopCornerNumber(string from)
         {
             var columnFrom = CharToColumnNumberMapper[from[0]];
             var rowFrom = (int)Char.GetNumericValue(from[1]);
-            if (columnFrom == 1 || rowFrom == 8)
-            {
-                return from;
-            }
 
             int fields;
-            if (columnFrom >= 4)
+            //if bishop is above diagonal line 2 (diagonal from a1-h8)
+            if (Math.Abs(1-rowFrom)>Math.Abs(8-columnFrom))
             {
                 fields = 8 - rowFrom;
-                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
+                return LocationToNumberMapper[ColumnNumberToCharMapper[columnFrom - fields] + "8"];
             }
 
             fields = Math.Abs(1 - columnFrom);
-            columnFrom += fields;
-            return "a" + columnFrom;
+            var rowTo = rowFrom - fields;
+            return LocationToNumberMapper["h" + rowTo];
         }
 
-        private string GetLastDownRightDiagonalLocation(string from)
+        private int GetLeftDownCornerNumber(string from)
         {
             var columnFrom = CharToColumnNumberMapper[from[0]];
             var rowFrom = (int)Char.GetNumericValue(from[1]);
-            if (columnFrom == 1 || rowFrom == 8)
+
+            int fields = Math.Abs(1-rowFrom);
+            //if bishop is below or inline with diagonal line 2 (diagonal from a1-h8)
+            if (Math.Abs(1 - rowFrom) <= Math.Abs(8 - columnFrom))
             {
-                return from;
+                return LocationToNumberMapper[ColumnNumberToCharMapper[columnFrom + fields] + "1"];
             }
 
-            int fields;
-            if (columnFrom >= 4)
+            fields = Math.Abs(8 - columnFrom);
+            var rowTo = rowFrom - fields;
+            return LocationToNumberMapper["a" + rowTo];
+        }
+
+        private int GetRightDownCornerNumber(string from)
+        {
+            var columnFrom = CharToColumnNumberMapper[from[0]];
+            var rowFrom = (int)Char.GetNumericValue(from[1]);
+
+            int fields = Math.Abs(1 - rowFrom);
+            //if bishop is below or inline with diagonal line 2 (diagonal from a1-h8)
+            if (Math.Abs(1 - rowFrom) <= Math.Abs(8 - columnFrom))
             {
-                fields = 8 - rowFrom;
-                return ColumnNumberToCharMapper[columnFrom + fields] + "8";
+                return LocationToNumberMapper[ColumnNumberToCharMapper[columnFrom - fields] + "1"];
             }
 
             fields = Math.Abs(1 - columnFrom);
-            columnFrom += fields;
-            return "a" + columnFrom;
+            var rowTo = rowFrom - fields;
+            return LocationToNumberMapper["h" + rowTo];
         }
 
         public override bool Equals(object obj)

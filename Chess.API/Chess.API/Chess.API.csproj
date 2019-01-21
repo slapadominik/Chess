@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Chess.API.Persistence\Chess.API.Persistence.csproj" />
+    <ProjectReference Include="..\Chess.API.Persistence\Chess.Persistence.csproj" />
     <ProjectReference Include="..\Chess.Logic\Chess.Logic.csproj" />
   </ItemGroup>
 

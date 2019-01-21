@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Chess.API.Helpers;
+﻿using Chess.API.Helpers;
 using Chess.API.Hubs;
 using Chess.API.Persistence.Implementation;
 using Chess.API.Persistence.Interfaces;
@@ -67,9 +63,10 @@ namespace Chess.API
             {
                 app.UseHsts();
             }
+            app.UseHttpsRedirection();
 
             app.UseCors("CorsPolicy");
-            app.UseHttpsRedirection();
+
             app.UseSignalR(routes =>
             {
                 routes.MapHub<TableHub>("/Hubs/Tables");

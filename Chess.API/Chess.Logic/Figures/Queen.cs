@@ -26,7 +26,7 @@ namespace Chess.Logic.Figures
             }
             if (!IsMoveValid(board, to))
             {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to}");
             }
 
             var from = CurrentLocation;
@@ -41,10 +41,10 @@ namespace Chess.Logic.Figures
                     board.SetChessman(to, moveType.captured);
                     board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
                 }
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.GetType().Name);
+            return new MoveResult(Figure.Queen, from, to, moveType.status, GetColor(), ConvertFigure(moveType.captured));
         }
 
         public override bool CanAttackField(IBoard board, string to)

@@ -40,6 +40,5 @@ namespace Chess.API.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
     }
 }
