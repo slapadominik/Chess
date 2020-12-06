@@ -116,12 +116,20 @@ namespace Chess.API.Hubs
             {
                 var game = _gameService.GetGame(gameId);
                 var moveResult = game.MakeMove(playerId, from, to);
+                if (moveResult.Color == Color.Black)
+                {
+                    moveResult.Chess = moveResult.Chess.ToLower();                   
+                }
+                else
+                {
+                    moveResult.Captured = moveResult.Captured?.ToLower();
+                }
                 await Clients.All.SendAsync("MakeMove_Result", moveResult);
             }
             catch (Exception ex)
             {
                 _exceptionHandler.Handle(ex);
-                await Clients.Caller.SendAsync("MakeMove_Error", ex.Message);
+                await Clients.Caller.SendAsync("MakeMove_Error", ex.Message, from);
             }
         }
 

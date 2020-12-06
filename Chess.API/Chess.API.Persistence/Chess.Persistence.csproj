@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>Chess.Persistence</AssemblyName>
+    <RootNamespace>Chess.Persistence</RootNamespace>
   </PropertyGroup>
 
 </Project>

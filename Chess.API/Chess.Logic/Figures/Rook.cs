@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Chess.Logic.Consts;
 using Chess.Logic.Exceptions;
 using Chess.Logic.Interfaces;
@@ -23,13 +24,9 @@ namespace Chess.Logic.Figures
 
         public override MoveResult Move(IBoard board, string to)
         {
-            if (board.GetChessman(to)?.GetColor() == GetColor())
-            {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
-            }
             if (!IsMoveValid(board, to))
             {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to}");
             }
 
             var from = CurrentLocation;
@@ -44,10 +41,10 @@ namespace Chess.Logic.Figures
                     board.SetChessman(to, moveType.captured);
                     board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
                 }
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
-            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.GetType().Name);
+            return new MoveResult(Figure.Rook, from, to, moveType.status, GetColor(), ConvertFigure(moveType.captured));
         }
 
 
@@ -58,11 +55,26 @@ namespace Chess.Logic.Figures
 
         public override IEnumerable<Move> GetPossibleMoves(IBoard board)
         {
-            throw new NotImplementedException();
+            List<Move> possibleDestinations = new List<Move>();
+            var availableFields = GenerateHorizontalFields().Concat(GenerateVerticalFields());
+            foreach (var field in availableFields)
+            {
+                if (IsMoveValid(board, field))
+                {
+                    possibleDestinations.Add(new Move(this, CurrentLocation, field));
+                }
+            }
+
+            return possibleDestinations;
         }
 
         private bool IsMoveValid(IBoard board, string to)
         {
+            if (board.GetChessman(to)?.GetColor() == GetColor())
+            {
+                return false;
+            }
+
             var directionIndicator = GetDirectionIndicator(to);
             if (directionIndicator == null)
             {
@@ -90,6 +102,48 @@ namespace Chess.Logic.Figures
             }
 
             return false;
+        }
+
+        private IEnumerable<string> GenerateHorizontalFields()
+        {
+            List<string> horizontalMoves = new List<string>();
+            var directionNumber = 1;
+            var currentLocationNumber = LocationToNumberMapper[CurrentLocation];
+            while ( (currentLocationNumber - directionNumber) % 8 != 0)
+            {
+                horizontalMoves.Add(NumberToLocationMapper[currentLocationNumber-directionNumber]);
+                directionNumber++;
+            }
+
+            directionNumber = 1;
+            while ( (currentLocationNumber + directionNumber) % 8 != 1)
+            {
+                horizontalMoves.Add(NumberToLocationMapper[currentLocationNumber + directionNumber]);
+                directionNumber++;
+            }
+
+            return horizontalMoves;
+        }
+
+        private IEnumerable<string> GenerateVerticalFields()
+        {
+            List<string> verticalFields = new List<string>();
+            var directionNumber = 8;
+            var currentLocationNumber = LocationToNumberMapper[CurrentLocation];
+            while (LocationNumberExists(currentLocationNumber - directionNumber))
+            {
+                verticalFields.Add(NumberToLocationMapper[currentLocationNumber - directionNumber]);
+                directionNumber += 8;
+            }
+
+            directionNumber = 8;
+            while (LocationNumberExists(currentLocationNumber + directionNumber))
+            {
+                verticalFields.Add(NumberToLocationMapper[currentLocationNumber + directionNumber]);
+                directionNumber += 8;
+            }
+
+            return verticalFields;
         }
 
         private int? GetDirectionIndicator(string to)

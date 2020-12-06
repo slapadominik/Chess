@@ -24,7 +24,7 @@ namespace Chess.Logic.Figures
 
             if (!CanAttackField(board, to))
             {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to}");
             }
 
             var from = CurrentLocation;
@@ -39,10 +39,10 @@ namespace Chess.Logic.Figures
                     board.SetChessman(to, moveType.captured);
                     board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
                 }
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - field is attacked");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - field is attacked");
             }
 
-            return new MoveResult(from, to, MoveStatus.Capture, GetColor(), moveType.captured?.ToString());
+            return new MoveResult(Figure.King, from, to, MoveStatus.Capture, GetColor(), ConvertFigure(moveType.captured));
         }
 
         public override IEnumerable<Move> GetPossibleMoves(IBoard board)

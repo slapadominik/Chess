@@ -16,6 +16,8 @@ namespace Chess.Logic.Figures
         private const int NORMAL_MOVE_DIFFERENCE = 8;
         private const int CAPTURE1_MOVE_DIFFERENCE = 9;
         private const int CAPTURE2_MOVE_DIFFERENCE = 7;
+        private static readonly int[] _movesDifferences = new int[] {FIRST_MOVE_DIFFERENCE, NORMAL_MOVE_DIFFERENCE, CAPTURE1_MOVE_DIFFERENCE, CAPTURE2_MOVE_DIFFERENCE};
+        
 
         public Pawn(Color color, string currentLocation) : base(color, currentLocation)
         {
@@ -24,16 +26,11 @@ namespace Chess.Logic.Figures
 
         public override MoveResult Move(IBoard board, string to)
         {
-            if (board.GetChessman(to)?.GetColor() == GetColor())
-            {
-                throw new InvalidMoveException($"Location [{to}] contains friendly chessman!");
-            }
-
-            //TODO: implementacja przypadku promocji pionka
             if (!IsMoveValid(board, to))
             {
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to}");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to}");
             }
+
             var from = CurrentLocation;
             var moveType = RecognizeMoveType(board, to);
             MoveToDestination(board, to);
@@ -46,12 +43,12 @@ namespace Chess.Logic.Figures
                     board.SetChessman(to, moveType.captured);
                     board.GetPlayerFigures(moveType.captured.GetColor()).Add(moveType.captured);
                 }
-                throw new InvalidMoveException($"{GetType()} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
+                throw new InvalidMoveException($"{GetType().Name} cannot make move: {CurrentLocation}:{to} - move leaves friendly king in check");
             }
 
             IsFirstMove = false;
 
-            return new MoveResult(from, to, moveType.status, GetColor(), moveType.captured?.GetType().Name);
+            return new MoveResult(Figure.Pawn, from, to, moveType.status, GetColor(), ConvertFigure(moveType.captured));
         }
 
         public override bool CanAttackField(IBoard board, string to)
@@ -76,13 +73,33 @@ namespace Chess.Logic.Figures
 
         public override IEnumerable<Move> GetPossibleMoves(IBoard board)
         {
-            throw new NotImplementedException();
+            List<Move> possibleDestinations = new List<Move>();
+            var currentLocationNumber = LocationToNumberMapper[CurrentLocation];
+            var differences = GetColor() == Color.White ? _movesDifferences.Select(x => -x).ToArray() : _movesDifferences;
+
+            foreach (var moveDifference in differences)
+            {
+                if (LocationNumberExists(currentLocationNumber + moveDifference))
+                {
+                    if (IsMoveValid(board, NumberToLocationMapper[currentLocationNumber + moveDifference]))
+                    {
+                        possibleDestinations.Add(new Move(this, CurrentLocation, NumberToLocationMapper[currentLocationNumber + moveDifference]));
+                    }
+                }
+            }
+
+            return possibleDestinations;
         }
 
         private bool IsMoveValid(IBoard board, string to)
         {
             if (LocationToNumberMapper.ContainsKey(to))
             {
+                if (board.GetChessman(to)?.GetColor() == GetColor())
+                {
+                    return false;
+                }
+
                 var locationDifference = LocationToNumberMapper[to]-LocationToNumberMapper[CurrentLocation];
 
                 switch (Math.Abs(locationDifference))

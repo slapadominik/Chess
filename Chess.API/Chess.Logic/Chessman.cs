@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Chess.Logic.Consts;
@@ -29,7 +30,7 @@ namespace Chess.Logic
             LocationToNumberMapper.ToDictionary(kp => kp.Value, kp => kp.Key);
 
         protected static readonly Dictionary<char, int> CharToColumnNumberMapper = new Dictionary<char, int>
-            {{'a', 1}, {'b', 2}, {'c', 3}, {'d', 4}, {'e', 5}, {'f', 6}, {'g', 7}, {'h', 8}};
+            {{'a', 8}, {'b', 7}, {'c', 6}, {'d', 5}, {'e', 4}, {'f', 3}, {'g', 2}, {'h', 1}};
 
         protected static readonly Dictionary<int, char> ColumnNumberToCharMapper =
             CharToColumnNumberMapper.ToDictionary(kp => kp.Value, kp => kp.Key);
@@ -72,6 +73,32 @@ namespace Chess.Logic
             board.SetChessman(to, this);
             board.SetChessman(CurrentLocation, null);
             CurrentLocation = to;          
+        }
+
+        protected bool LocationNumberExists(int locationNumber)
+        {
+            return NumberToLocationMapper.ContainsKey(locationNumber);
+        }
+
+        protected string ConvertFigure(Chessman chessman)
+        {
+            switch (chessman?.GetType().Name)
+            {
+                case nameof(Bishop):
+                    return Figure.Bishop;
+                case nameof(King):
+                    return Figure.King;
+                case nameof(Queen):
+                    return Figure.Queen;
+                case nameof(Rook):
+                    return Figure.Rook;
+                case nameof(Pawn):
+                    return Figure.Pawn;
+                case nameof(Knight):
+                    return Figure.Knight;
+                default:
+                    return null;
+            }
         }
     }
 }
