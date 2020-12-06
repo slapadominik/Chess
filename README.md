@@ -1,6 +1,8 @@
 # Chess
 Multiplayer chess game application created as an academic project.  
 
+<a target="_blank" href="https://chessnet.azurewebsites.net/">View Demo</a>
+
 ## Built With
 
 * [ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/) - .NET framework for creating web apps
