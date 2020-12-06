@@ -9,6 +9,9 @@ Multiplayer chess game application created as an academic project.
 * [SignalR Core](https://docs.microsoft.com/en-us/aspnet/core/signalr/introduction?view=aspnetcore-5.0) - Open-source library that simplifies adding real-time web functionality to .NET apps
 * [React](https://reactjs.org/) - JavaScript library for building user interfaces
 
-<br>
+## Screenshot
+
+
+<br/>
 
 ![alt text](https://github.com/slapadominik/Chess/blob/master/docs/images/UI.png)
