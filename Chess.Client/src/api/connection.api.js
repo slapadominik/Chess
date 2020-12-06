@@ -4,7 +4,7 @@ import {
 
 export function buildConnection() {
   return new HubConnectionBuilder()
-    .withUrl(`https://localhost:44384/Hubs/Games`)
+    .withUrl(`https://chessapi20201206153312.azurewebsites.net/Hubs/Games`)
     .build();
 }
 

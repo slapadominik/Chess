@@ -72,7 +72,7 @@ export class App extends React.Component {
 
   componentDidMount() {
     axios
-      .get('https://localhost:44384/api/table/' + this.state.tableNumber)
+      .get('https://chessapi20201206153312.azurewebsites.net/api/table/' + this.state.tableNumber)
       .then((result) => {
         this.setState({
           players: [

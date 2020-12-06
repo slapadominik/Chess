@@ -2,6 +2,9 @@
   "name": "chess",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "10.0"
+  },
   "dependencies": {
     "@aspnet/signalr": "^1.1.0",
     "axios": "^0.18.0",

@@ -34,15 +34,8 @@ namespace Chess.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-            {
-                builder
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                    .WithOrigins("http://localhost:3000");
-            }));
-            
+            services.AddCors();
+
             services.AddSignalR();
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddTransient<IUserService, UserService>();
@@ -65,7 +58,11 @@ namespace Chess.API
             }
             app.UseHttpsRedirection();
 
-            app.UseCors("CorsPolicy");
+            app.UseCors(x => x
+                .AllowCredentials()
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
             app.UseSignalR(routes =>
             {
